@@ -1,0 +1,21 @@
+/* Réinitialisation du body pour avoir une hauteur de 100vh */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding-top: 56px; /* Assure que le contenu ne touche pas le navbar */
+}
+
+/* Contenu principal de la page, occupe l'espace restant */
+.container {
+  flex: 1; /* Permet au contenu de prendre tout l'espace restant */
+}
+
+/* Footer toujours en bas */
+footer {
+  margin-top: auto; /* Pousse le footer au bas de la page */
+}

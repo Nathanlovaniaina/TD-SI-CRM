@@ -1,0 +1,163 @@
+{"pays":[
+    {
+        "nom": "France",
+        "capitale": "Paris",
+        "superficie": 551695,
+        "population": 67348000,
+        "code_pays": "FR",
+        "image": "fr.jpg"
+    },
+    {
+        "nom": "Allemagne",
+        "capitale": "Berlin",
+        "superficie": 357386,
+        "population": 83149300,
+        "code_pays": "DE",
+        "image": "de.jpg"
+    },
+    {
+        "nom": "Canada",
+        "capitale": "Ottawa",
+        "superficie": 9984670,
+        "population": 38008005,
+        "code_pays": "CA",
+        "image": "ca.jpg"
+    },
+    {
+        "nom": "Brésil",
+        "capitale": "Brasilia",
+        "superficie": 8515767,
+        "population": 213993437,
+        "code_pays": "BR",
+        "image": "br.jpg"
+    },
+    {
+        "nom": "Chine",
+        "capitale": "Pékin",
+        "superficie": 9596961,
+        "population": 1444216107,
+        "code_pays": "CN",
+        "image": "cn.jpg"
+    },
+    {
+        "nom": "États-Unis",
+        "capitale": "Washington, D.C.",
+        "superficie": 9833517,
+        "population": 331893745,
+        "code_pays": "US",
+        "image": "us.jpg"
+    },
+    {
+        "nom": "Australie",
+        "capitale": "Canberra",
+        "superficie": 7692024,
+        "population": 25687041,
+        "code_pays": "AU",
+        "image": "au.jpg"
+    },
+    {
+        "nom": "Inde",
+        "capitale": "New Delhi",
+        "superficie": 3287263,
+        "population": 1393409038,
+        "code_pays": "IN",
+        "image": "in.jpg"
+    },
+    {
+        "nom": "Russie",
+        "capitale": "Moscou",
+        "superficie": 17098242,
+        "population": 145912025,
+        "code_pays": "RU",
+        "image": "ru.jpg"
+    },
+    {
+        "nom": "Mexique",
+        "capitale": "Mexico",
+        "superficie": 1964375,
+        "population": 126014024,
+        "code_pays": "MX",
+        "image": "mx.jpg"
+    },
+    {
+        "nom": "Japon",
+        "capitale": "Tokyo",
+        "superficie": 377975,
+        "population": 125360000,
+        "code_pays": "JP",
+        "image": "jp.jpg"
+    },
+    {
+        "nom": "Argentine",
+        "capitale": "Buenos Aires",
+        "superficie": 2780400,
+        "population": 45376763,
+        "code_pays": "AR",
+        "image": "ar.jpg"
+    },
+    {
+        "nom": "Afrique du Sud",
+        "capitale": "Pretoria",
+        "superficie": 1219090,
+        "population": 60142978,
+        "code_pays": "ZA",
+        "image": "za.jpg"
+    },
+    {
+        "nom": "Égypte",
+        "capitale": "Le Caire",
+        "superficie": 1002450,
+        "population": 104258327,
+        "code_pays": "EG",
+        "image": "eg.jpg"
+    },
+    {
+        "nom": "Italie",
+        "capitale": "Rome",
+        "superficie": 301340,
+        "population": 60238522,
+        "code_pays": "IT",
+        "image": "it.jpg"
+    },
+    {
+        "nom": "Espagne",
+        "capitale": "Madrid",
+        "superficie": 505992,
+        "population": 47332614,
+        "code_pays": "ES",
+        "image": "es.jpg"
+    },
+    {
+        "nom": "Nigeria",
+        "capitale": "Abuja",
+        "superficie": 923768,
+        "population": 213401000,
+        "code_pays": "NG",
+        "image": "ng.jpg"
+    },
+    {
+        "nom": "Indonésie",
+        "capitale": "Jakarta",
+        "superficie": 1904569,
+        "population": 276361783,
+        "code_pays": "ID",
+        "image": "id.jpg"
+    },
+    {
+        "nom": "Corée du Sud",
+        "capitale": "Séoul",
+        "superficie": 100210,
+        "population": 51780579,
+        "code_pays": "KR",
+        "image": "kr.jpg"
+    },
+    {
+        "nom": "Colombie",
+        "capitale": "Bogotá",
+        "superficie": 1141748,
+        "population": 51874024,
+        "code_pays": "CO",
+        "image": "co.jpg"
+    }
+]
+}

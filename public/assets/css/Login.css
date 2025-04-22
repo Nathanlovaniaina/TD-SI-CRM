@@ -1,0 +1,64 @@
+body {
+    background: radial-gradient(circle, #222222, #121212);
+    color: white;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.signup-link {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #aaa;
+    font-size: 18px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+.signup-link:hover {
+    color: white;
+}
+.login-container {
+    padding: 2rem;
+    width: 400px;
+}
+.login-container h3 {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.login-container p {
+    font-size: 14px;
+    color: #aaa;
+}
+.form-control {
+    background: #2a2a3a;
+    color: white;
+    border: none;
+}
+.form-control:focus {
+    background: #33334a;
+    color: white;
+}
+.btn-login {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    margin-top: 15px;
+}
+.btn-login:hover {
+    opacity: 0.8;
+}
+.forgot-password {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #aaa;
+    text-decoration: none;
+}
+.forgot-password:hover {
+    color: white;
+}
