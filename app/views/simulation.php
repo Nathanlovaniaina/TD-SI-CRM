@@ -260,9 +260,11 @@
         <div class="card">
             <h3>Nombre de commande par mois</h3>
             <div class="month-grid">
-                <?php foreach($stat['commandes'] as $s): ?>
-                    <div class="month-item"><strong><?= $s['date']?>:</strong> <?= $s['value'] ?> </div>
-                <?php endforeach ?>
+                <?php if(isset($stat)) { ?>
+                    <?php foreach($stat['commandes'] as $s): ?>
+                        <div class="month-item"><strong><?= $s['date']?>:</strong> <?= $s['value'] ?> </div>
+                    <?php endforeach ?>
+                <?php }?>
             </div>
         </div>
 
@@ -271,23 +273,21 @@
             <h3>INFORMATION</h3>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-label">Année</div>
-                    <div class="stat-value">2025</div>
+                    <div class="stat-label">Objectif</div>
+                    <div class="stat-value" style="font-size:15px;"><?php if(isset($action)) echo $action['Objectif'] ?></div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Durer</div>
+                    <div class="stat-value" style="font-size:15px;"><?php if(isset($durer)) echo $durer?> mois</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Nombre de client obtenue</div>
-                    <div class="stat-value">120</div>
-                    <div>+15%</div>
+                    <div class="stat-label">Cout total</div>
+                    <div class="stat-value"><?php if(isset($action)) echo $action['Cout'] * $durer ?> AR</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Montant total</div>
-                    <div class="stat-value">€245k</div>
-                    <div>+12%</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Montant moyen</div>
-                    <div class="stat-value">€2,042</div>
-                    <div>-3%</div>
+                    <div class="stat-label">Cout/mois</div>
+                    <div class="stat-value"><?php if(isset($action)) echo $action['Cout'] ?> AR</div>
                 </div>
             </div>
         </div>
@@ -296,9 +296,41 @@
         <div class="card">
             <h3>Montant par mois</h3>
             <div class="month-grid">
-                <?php foreach($stat['montant_par_moi'] as $s): ?>
-                    <div class="month-item"><strong><?= $s['date']?>:</strong> <?= $s['value'] ?> AR</div>
-                <?php endforeach ?>
+                <?php if(isset($stat)) { ?>
+                    <?php foreach($stat['montant_par_moi'] as $s): ?>
+                        <div class="month-item"><strong><?= $s['date']?>:</strong> <?= $s['value'] ?> AR</div>
+                    <?php endforeach ?>
+                <?php }?>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Nombre de client par mois</h3>
+            <div class="month-grid">
+                <?php if(isset($stat)) { ?>
+                    <?php foreach($stat['clients'] as $s): ?>
+                        <div class="month-item"><strong><?= $s['date']?>:</strong> <?= $s['value'] ?> </div>
+                    <?php endforeach ?>
+                <?php }?>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>BILAN</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Nombre de client obtenue</div>
+                    <div class="stat-value" style="font-size:15px;"><?php if(isset($stat)) echo $stat['client_obtenue'] ?></div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Commande</div>
+                    <div class="stat-value"><?php if(isset($stat)) echo $stat['commande_obtenue'] ?></div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Montant total</div>
+                    <div class="stat-value"><?php if(isset($action)) echo $action['Cout'] ?> AR</div>
+                    <div>-3%</div>
+                </div>
             </div>
         </div>
     </div>
