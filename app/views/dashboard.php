@@ -180,9 +180,18 @@
             <div class="card">
                 <h3>📦 Commandes Récentes</h3>
                 <ul>
-                    <li>Cmd #1023 - Dupont J. - €220.00 - Livrée</li>
-                    <li>Cmd #1024 - Martin M. - €85.50 - En cours</li>
-                    <li>Cmd #1025 - Durand L. - €47.20 - Annulée</li>
+                    <?php if (!empty($commandes)): ?>
+                        <?php foreach ($commandes as $commande): ?>
+                            <li>
+                                Cmd #<?= htmlspecialchars($commande['CommandeID']) ?> -
+                                <?= htmlspecialchars($commande['DateCommande']) ?> -
+                                €<?= number_format($commande['MontantTotal'], 2, ',', ' ') ?> -
+                                <?= htmlspecialchars($commande['Statut']) ?>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li>Aucune commande récente.</li>
+                    <?php endif; ?>
                 </ul>
             </div>
 
