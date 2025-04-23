@@ -1,52 +1,55 @@
--- Clients
+-- 1. Clients
 INSERT INTO Client (Nom, Prenom, Telephone, Email, Adresse, Statut) VALUES
-('Rakoto', 'Jean', '0341234567', 'jean.rakoto@mail.com', 'Antananarivo', 'Actif'),
-('Rasoanaivo', 'Lina', '0321123456', 'lina.rasoanaivo@mail.com', 'Fianarantsoa', 'Prospet'),
-('Rasoanaivo', 'Naina', '0323323456', 'lina.rasoanaivo@mail.com', 'Toamasina', 'Inactif');
+('Dupont', 'Jean', '0612345678', 'jean.dupont@example.com', '12 rue de la Paix, Paris', 'Prospect'),
+('Martin', 'Marie', '0623456789', 'marie.martin@example.com', '5 avenue Victor Hugo, Lyon', 'Client'),
+('Durand', 'Luc', '0634567890', 'luc.durand@example.com', '8 boulevard Saint-Germain, Paris', 'Client');
 
--- Produits
+-- 2. Produits
 INSERT INTO Produit (Nom, Categorie, Prix, Stock) VALUES
-('Ordinateur portable', 'Informatique', 1500000, 10),
-('Imprimante', 'Informatique', 300000, 5),
-('Chaise de bureau', 'Mobilier', 120000, 20);
+('Lait', 'Produits Laitiers', 1.20, 100),
+('Pain', 'Boulangerie', 0.80, 200),
+('Chocolat', 'Confiserie', 2.50,  50);
 
--- Commandes
-INSERT INTO Commande (ClientID, DateCommande, MontantTotal, Statut) VALUES
-(1, '2025-04-01', 1800000, 'Validée'),
-(2, '2025-04-10', 300000, 'En attente');
-
--- Commande_Produit
-INSERT INTO Commande_Produit (CommandeID, ProduitID, Quantite, PrixUnitaire) VALUES
-(1, 1, 1, 1500000),
-(1, 3, 2, 150000), -- Prix promo pour chaise
-(2, 2, 1, 300000);
-
--- Employés
+-- 3. Employés
 INSERT INTO Employe (Nom, Poste, Email) VALUES
-('Andriamatoa Hery', 'Responsable Commercial', 'hery@entreprise.mg'),
-('Ravelo Tiana', 'Support Client', 'tiana@entreprise.mg');
+('Leroy', 'Commercial', 'alice.leroy@entreprise.com'),
+('Petit', 'Manager',    'bob.petit@entreprise.com');
 
--- Actions Client
+-- 4. Actions clients
 INSERT INTO ActionClient (ClientID, EmployeID, TypeAction, CategorieAction, DateAction, Description, CoutAction, StatutAction, Resultat) VALUES
-(1, 1, 'Appel', 'Suivi', '2025-04-02', 'Appel pour confirmer la commande', 0, 'Complétée', 'Commande confirmée'),
-(2, 2, 'Email', 'Réclamation', '2025-04-11', 'Client se plaint du retard', 0, 'En cours', 'En attente de retour');
+(1, 1, 'Appel Téléphonique', 'Prospection', '2025-04-01', 'Appel de découverte',              5.00, 'Terminé',       'Intéressé'),
+(2, 2, 'Email',             'Suivi',       '2025-04-05', 'Envoi de la brochure produit',     1.00, 'En attente',    ''),
+(3, 1, 'Visite',            'Négociation', '2025-04-10', 'RDV sur site client',              20.00,'Terminé',       'Contrat signé');
 
--- Réactions Client
+-- 5. Réactions clients
 INSERT INTO ReactionClient (ActionID, ClientID, TypeReaction, DateReaction, Contenu) VALUES
-(1, 1, 'Satisfaction', '2025-04-03', 'Le client est satisfait'),
-(2, 2, 'Mécontentement', '2025-04-12', 'Le client attend toujours la livraison');
+(1, 1, 'Positif',      '2025-04-02', 'Demande de devis'),
+(2, 2, 'Neutre',       '2025-04-06', 'Pas encore lu'),
+(3, 3, 'Très positif', '2025-04-11', 'Contrat signé');
 
--- Actions Commerciales
-INSERT INTO ActionCommerciale (ActionID, Campagne, Objectif, EstConvertie, cout) VALUES
-(1, 'Campagne Pâques', 'Relancer les clients inactifs', TRUE, 50000),
-(2, 'Promo Avril', 'Vente de mobilier de bureau', FALSE, 25000);
+-- 6. Actions commerciales (spécialisation)
+INSERT INTO ActionCommerciale (ActionID, Campagne, Objectif, EstConvertie, Cout) VALUES
+(1, 'Promo printemps', 'Augmenter ventes de 10%',  TRUE, 100.00),
+(3, 'Offre spéciale',  'Fidélisation',           TRUE, 200.00);
 
--- Réactions Commerciales
-INSERT INTO ReactionCommerciale (ActionCommercialeID, ClientID, TypeReaction, DateReaction, Contenu) VALUES
-(1, 1, 'Achat effectué', '2025-04-04', 'Le client a passé commande'),
-(2, 2, 'Intérêt', '2025-04-11', 'Souhaite recevoir plus d\'infos');
+-- 7. Réactions commerciales (liées directement à ActionClient)
+INSERT INTO ReactionCommerciale (ActionID, ClientID, TypeReaction, DateReaction, Contenu) VALUES
+(1, 1, 'Acheté',             '2025-04-03', '2 packs Lait'),
+(1, 2, 'Aucun intérêt',      '2025-04-04', 'N/A'),
+(3, 3, 'Inscrit',            '2025-04-12', 'Inscrit à la newsletter');
 
--- Requêtes budgétaires
+-- 8. Commandes
+INSERT INTO Commande (ClientID, DateCommande, MontantTotal, Statut) VALUES
+(1, '2025-04-02',  3.20, 'Livrée'),
+(2, '2025-04-07',  7.50, 'En cours');
+
+-- 9. Détails de commandes
+INSERT INTO Commande_Produit (CommandeID, ProduitID, Quantite, PrixUnitaire) VALUES
+(1, 1, 2, 1.20),  -- 2 x Lait
+(1, 2, 1, 0.80),  -- 1 x Pain
+(2, 3, 3, 2.50);  -- 3 x Chocolat
+
+-- 10. Requêtes budgétaires
 INSERT INTO RequeteBudgetaire (valeur) VALUES
-(2500000),
-(1750000);
+(5000.00),
+(12000.00);
