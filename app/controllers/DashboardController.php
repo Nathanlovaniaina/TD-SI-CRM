@@ -38,17 +38,17 @@ class DashboardController {
     public function nombre_clients() {
         // Récupère l'instance PDO
         $db = Flight::db();
-    
+
         try {
             // Prépare et exécute la requête de comptage
             $stmt = $db->prepare("SELECT COUNT(*) AS total FROM Client");
             $stmt->execute();
-        
+
             // Récupère le résultat
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
             return isset($row['total']) ? (int)$row['total'] : 0;
-        
+
         } catch (PDOException $e) {
             error_log('Erreur nombre_clients : ' . $e->getMessage());
             return 0;
@@ -56,8 +56,34 @@ class DashboardController {
     }
 
 
-    public function get_view(){
-        return Flight::render('dashboard', ['commandes' => $this->dernier_commande()]);
+    public function nombre_commandes() {
+        // Récupère l'instance PDO
+        $db = Flight::db();
+
+        try {
+            // Prépare et exécute la requête de comptage
+            $stmt = $db->prepare("SELECT COUNT(*) AS total FROM Commande");
+            $stmt->execute();
+
+            // Récupère le résultat
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return isset($row['total']) ? (int)$row['total'] : 0;
+
+        } catch (PDOException $e) {
+            error_log('Erreur nombre_commandes : ' . $e->getMessage());
+            return 0;
+        }
     }
+
+
+    public function get_view(){
+        return Flight::render('dashboard', [
+            'commandes'    => $this->dernier_commande(),
+            'nb_clients'   => $this->nombre_clients(),
+            'nb_commandes' => $this->nombre_commandes()
+        ]);
+    }
+    
 
 }

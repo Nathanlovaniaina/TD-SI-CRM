@@ -170,8 +170,8 @@
             <div class="card">
                 <h3>📊 KPI</h3>
                 <ul>
-                    <li><strong>Clients Totals : </strong> 120</li>
-                    <li><strong>Commandes : </strong> 85</li>
+                    <li><strong>Clients Totals : </strong> <?= $nb_clients ?></li>
+                    <li><strong>Commandes : </strong> <?= $nb_commandes ?></li>
                     <li><strong>Chiffre d'affaires : </strong> €15,340</li>
                     <li><strong>Taux conversion : </strong> 45%</li>
                 </ul>
