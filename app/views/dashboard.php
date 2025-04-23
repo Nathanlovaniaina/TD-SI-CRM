@@ -204,20 +204,14 @@
             </div>
 
             <div class="card">
-                <h3>🔔 Requêtes Budgétaires</h3>
+                <h3>🏆 Produits les + vendus</h3>
                 <ul>
-                    <li>#15 - €5,000 - À valider</li>
-                    <li>#16 - €12,000 - Validée</li>
+                    <?php foreach($produits_plus_vendus as $produit): ?>
+                        <li><?= htmlspecialchars($produit['produit']) ?> - <?= htmlspecialchars($produit['total_vendu']) ?> vendus</li>
+                    <?php endforeach; ?>
                 </ul>
             </div>
 
-            <div class="card">
-                <h3>⚠️ Produits en Rupture</h3>
-                <ul>
-                    <li>Chocolat - Stock: 2</li>
-                    <li>Lait - Stock: 5</li>
-                </ul>
-            </div>
         </div>
     </div>
 

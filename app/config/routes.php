@@ -29,6 +29,10 @@ $router->get('/',function(){
 	Flight::render('exemple_dolibarr_style');
 });
 
+$router->get('/simulation',function(){
+	Flight::render('simulation');
+});
+
 $router->get('/dashboard',function(){
 	$DashboardController = new DashboardController();
 	$DashboardController->get_view();

@@ -77,13 +77,41 @@ class DashboardController {
     }
 
 
+    public function produits_plus_vendus() {
+        $db = Flight::db();
+
+        try {
+            $stmt = $db->prepare("
+                SELECT 
+                    p.nom AS produit,
+                    SUM(lc.quantite) AS total_vendu
+                FROM Commande_Produit lc
+                INNER JOIN Produit p ON lc.ProduitID = p.ProduitID
+                GROUP BY p.nom
+                ORDER BY total_vendu DESC
+                LIMIT 5
+            ");
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            error_log('Erreur produits_plus_vendus : ' . $e->getMessage());
+            return [];
+        }
+    }
+
+
+
     public function get_view(){
         return Flight::render('dashboard', [
-            'commandes'    => $this->dernier_commande(),
-            'nb_clients'   => $this->nombre_clients(),
-            'nb_commandes' => $this->nombre_commandes()
+            'commandes'          => $this->dernier_commande(),
+            'nb_clients'         => $this->nombre_clients(),
+            'nb_commandes'       => $this->nombre_commandes(),
+            'produits_plus_vendus' => $this->produits_plus_vendus()
         ]);
     }
+    
     
 
 }
