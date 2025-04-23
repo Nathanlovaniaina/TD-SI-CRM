@@ -1,5 +1,7 @@
+-- Création de la base et sélection
 CREATE DATABASE IF NOT EXISTS gestion_budget;
 USE gestion_budget;
+
 -- ======================
 -- TABLE Client
 -- ======================
@@ -73,8 +75,8 @@ CREATE TABLE ActionClient (
     CoutAction DECIMAL(10, 2),
     StatutAction VARCHAR(50),
     Resultat VARCHAR(100),
-    FOREIGN KEY (ClientID) REFERENCES Client(ClientID),
-    FOREIGN KEY (EmployeID) REFERENCES Employe(EmployeID)
+    FOREIGN KEY (ClientID)   REFERENCES Client(ClientID),
+    FOREIGN KEY (EmployeID)  REFERENCES Employe(EmployeID)
 );
 
 -- ======================
@@ -88,7 +90,7 @@ CREATE TABLE ReactionClient (
     DateReaction DATE,
     Contenu TEXT,
     FOREIGN KEY (ActionID) REFERENCES ActionClient(ActionID),
-    FOREIGN KEY (ClientID) REFERENCES Client(ClientID)
+    FOREIGN KEY (ClientID)  REFERENCES Client(ClientID)
 );
 
 -- ======================
@@ -96,11 +98,11 @@ CREATE TABLE ReactionClient (
 -- ======================
 CREATE TABLE ActionCommerciale (
     ActionCommercialeID INT PRIMARY KEY AUTO_INCREMENT,
-    ActionID INT,
+    ActionID INT NOT NULL,
     Campagne VARCHAR(100),
     Objectif VARCHAR(255),
     EstConvertie BOOLEAN,
-    cout DECIMAL(10, 2),
+    Cout DECIMAL(10, 2),
     FOREIGN KEY (ActionID) REFERENCES ActionClient(ActionID)
 );
 
@@ -109,17 +111,17 @@ CREATE TABLE ActionCommerciale (
 -- ======================
 CREATE TABLE ReactionCommerciale (
     ReactionCommercialeID INT PRIMARY KEY AUTO_INCREMENT,
-    ActionCommercialeID INT,
-    ClientID INT,
+    ActionID INT NOT NULL,               -- lien direct vers ActionClient
+    ClientID INT NOT NULL,
     TypeReaction VARCHAR(100),
     DateReaction DATE,
     Contenu TEXT,
-    FOREIGN KEY (ActionCommercialeID) REFERENCES ActionCommerciale(ActionCommercialeID),
-    FOREIGN KEY (ClientID) REFERENCES Client(ClientID)
+    FOREIGN KEY (ActionID) REFERENCES ActionClient(ActionID),
+    FOREIGN KEY (ClientID)  REFERENCES Client(ClientID)
 );
 
 -- ======================
--- TABLE Requete budgetaire
+-- TABLE RequeteBudgetaire
 -- ======================
 CREATE TABLE RequeteBudgetaire (
     id_requete INT PRIMARY KEY AUTO_INCREMENT,
