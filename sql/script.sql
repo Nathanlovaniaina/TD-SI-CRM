@@ -121,7 +121,7 @@ CREATE TABLE ReactionCommerciale (
 -- ======================
 -- TABLE Requete budgetaire
 -- ======================
-CREATE TABLE RequeteBudgetaire{
+CREATE TABLE RequeteBudgetaire (
     id_requete INT PRIMARY KEY AUTO_INCREMENT,
     valeur DECIMAL(10, 2)
-}
+);
