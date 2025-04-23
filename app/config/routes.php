@@ -2,6 +2,7 @@
 
 use app\controllers\ApiExampleController;
 use app\controllers\WelcomeController;
+use app\controllers\DashboardController;
 use app\controllers\CaisseControleur;
 use app\controllers\AchatController;
 use app\controllers\ListeStatistiqueController;
@@ -26,4 +27,9 @@ $Welcome_Controller = new WelcomeController();
 
 $router->get('/',function(){
 	Flight::render('exemple_dolibarr_style');
+});
+
+$router->get('/dashboard',function(){
+	$DashboardController = new DashboardController();
+	$DashboardController->get_view();
 });
