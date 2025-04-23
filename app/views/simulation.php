@@ -201,56 +201,38 @@
     <!-- Conserver la structure header/sidebar existante -->
 
     <div class="main-content">
-        <h1>Par mois/année</h1>
+        <h1>Simulation d'action</h1>
 
         <!-- Section Filtres -->
         
         <div class="card">
-            <form id="filterForm" class="filters">
+            <form action="simulation" method="post" id="filterForm" class="filters">
                 <!-- Groupe Tiers -->
                 <div class="filter-group">
-                    <h4><label for="tierType">Tiers</label></h4>
+                    <h4><label for="tierType">Action</label></h4>
                     <div class="form-fields">
-                        <select id="tierType" name="tierType" class="dolibarr-select">
-                            <option value="">Type du tiers</option>
-                            <option value="client">Client</option>
-                            <option value="fournisseur">Fournisseur</option>
-                            <option value="partenaire">Partenaire</option>
+                        <select id="tierType" name="idAction" class="dolibarr-select">
+                            <option value="">Selectionner une action</option>
+                            <?php foreach($actions as $a): ?>
+                                <option value="<?php echo $a['ActionCommercialeID']?>"><?php echo $a['Campagne'] ?></option>
+                            <?php endforeach ?>
                         </select>
-
-                        <input type="text" 
-                               id="clientCategory" 
-                               name="clientCategory" 
-                               class="dolibarr-input"
-                               placeholder="Tag/catégorie client">
                     </div>
                 </div>
 
                 <!-- Groupe Créé par -->
                 <div class="filter-group">
-                    <h4><label for="state">Créé par</label></h4>
+                    <h4><label for="state">Date debut</label></h4>
                     <div class="form-fields">
-                        <select id="state" name="state" class="dolibarr-select">
-                            <option value="">État</option>
-                            <option value="draft">Brouillon</option>
-                            <option value="validated">Validé</option>
-                            <option value="canceled">Annulé</option>
-                        </select>
+                        <input type="date" name="date_debut" class="dolibarr-input" id="">
                     </div>
                 </div>
 
                 <!-- Groupe Année -->
                 <div class="filter-group">
-                    <h4><label for="year">Année</label></h4>
+                    <h4><label for="year">Date fin</label></h4>
                     <div class="form-fields">
-                        <input type="number" 
-                               id="year" 
-                               name="year" 
-                               min="2000" 
-                               max="2030" 
-                               step="1" 
-                               value="2025"
-                               class="dolibarr-input">
+                        <input type="date" name="date_fin" class="dolibarr-input" id="">
                     </div>
                 </div>
 
@@ -260,38 +242,40 @@
                         Appliquer les filtres
                     </button>
                 </div>
+
+                <div class="filter-group">
+                    <h4><label for="tierType">Etat</label></h4>
+                    <div class="form-fields">
+                        <select id="tierType" name="tierType" class="dolibarr-select">
+                            <option value="">Selectionner un etat</option>
+                            <option value="Simulation">Simuler</option>
+                            <option value="Valider">Valider</option>
+                        </select>
+                    </div>
+                </div>
             </form>
         </div>
 
         <!-- Section Nombre par mois -->
         <div class="card">
-            <h3>Nombre par mois</h3>
+            <h3>Nombre de commande par mois</h3>
             <div class="month-grid">
-                <div class="month-item">Jan.</div>
-                <div class="month-item">Fév.</div>
-                <div class="month-item">Mars</div>
-                <div class="month-item">Avr.</div>
-                <div class="month-item">Mai</div>
-                <div class="month-item">Juin</div>
-                <div class="month-item">Juil.</div>
-                <div class="month-item">Août</div>
-                <div class="month-item">Sep.</div>
-                <div class="month-item">Oct.</div>
-                <div class="month-item">Nov.</div>
-                <div class="month-item">Déc.</div>
+                <?php foreach($stat['commandes'] as $s): ?>
+                    <div class="month-item"><strong><?= $s['date']?>:</strong> <?= $s['value'] ?> </div>
+                <?php endforeach ?>
             </div>
         </div>
 
         <!-- Section RAFRAICHE -->
         <div class="card">
-            <h3>RAFRAICHE</h3>
+            <h3>INFORMATION</h3>
             <div class="stats-grid">
                 <div class="stat-item">
                     <div class="stat-label">Année</div>
                     <div class="stat-value">2025</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Nombre de propositions</div>
+                    <div class="stat-label">Nombre de client obtenue</div>
                     <div class="stat-value">120</div>
                     <div>+15%</div>
                 </div>
@@ -310,20 +294,11 @@
 
         <!-- Section Montant par mois -->
         <div class="card">
-            <h3>Montant par mois (HT)</h3>
+            <h3>Montant par mois</h3>
             <div class="month-grid">
-                <div class="month-item">Jan.</div>
-                <div class="month-item">Fév.</div>
-                <div class="month-item">Mars</div>
-                <div class="month-item">Avr.</div>
-                <div class="month-item">Mai</div>
-                <div class="month-item">Juin</div>
-                <div class="month-item">Juil.</div>
-                <div class="month-item">Août</div>
-                <div class="month-item">Sep.</div>
-                <div class="month-item">Oct.</div>
-                <div class="month-item">Nov.</div>
-                <div class="month-item">Déc.</div>
+                <?php foreach($stat['montant_par_moi'] as $s): ?>
+                    <div class="month-item"><strong><?= $s['date']?>:</strong> <?= $s['value'] ?> AR</div>
+                <?php endforeach ?>
             </div>
         </div>
     </div>

@@ -6,6 +6,7 @@ use app\controllers\DashboardController;
 use app\controllers\CaisseControleur;
 use app\controllers\AchatController;
 use app\controllers\ListeStatistiqueController;
+use app\controllers\SimulationControllers;
 use flight\Engine;
 use flight\net\Router;
 // use Flight;
@@ -30,7 +31,13 @@ $router->get('/',function(){
 });
 
 $router->get('/simulation',function(){
-	Flight::render('simulation');
+	$SimulationControllers =new SimulationControllers();
+	$SimulationControllers->get_view();
+});
+
+$router->post('/simulation',function(){
+	$SimulationControllers =new SimulationControllers();
+	$SimulationControllers->get_view_post();
 });
 
 $router->get('/dashboard',function(){
