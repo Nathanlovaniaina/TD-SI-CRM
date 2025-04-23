@@ -127,3 +127,8 @@ CREATE TABLE RequeteBudgetaire (
     id_requete INT PRIMARY KEY AUTO_INCREMENT,
     valeur DECIMAL(10, 2)
 );
+
+ALTER TABLE Client
+  ADD COLUMN DateInscription DATE NOT NULL
+    DEFAULT CURRENT_DATE
+    AFTER Adresse;
