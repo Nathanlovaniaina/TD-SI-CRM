@@ -116,7 +116,7 @@ class SimulationControllers {
         }
     }
 
-    public function promotion_tous_produit($date_debut,$date_fin,$dataCommande,$nombre_de_client){
+    public function promotion_tous_produit($date_debut,$date_fin,$dataCommande,$nombre_de_client,$clientRate,$commandeRate,$prixRate){
         $commandes = array();
         $montant_par_moi = array(); 
         $date_debut_copyr = clone $date_debut;
@@ -130,8 +130,8 @@ class SimulationControllers {
             $nombre = 0;
 
             for ($i=0; $i < count($dataCommande) ; $i++) { 
-                $prix = $dataCommande[$i]['prix'] - ($dataCommande[$i]['prix'] * 0.1);
-                $dataCommande[$i]['total_vendu'] = $dataCommande[$i]['total_vendu'] * 1.2;
+                $prix = $dataCommande[$i]['prix'] - ($dataCommande[$i]['prix'] * $prixRate);
+                $dataCommande[$i]['total_vendu'] += $dataCommande[$i]['total_vendu'] * $commandeRate;
                 $montant += $dataCommande[$i]['total_vendu'] * $prix;
                 $nombre += $dataCommande[$i]['total_vendu'];
             }
@@ -144,7 +144,7 @@ class SimulationControllers {
                 'date' =>$date_debut->format('Y-m-d')
             ] ;
 
-            $nombre_de_client += $nombre_de_client * 0.1; 
+            $nombre_de_client += $nombre_de_client * $clientRate; 
 
             $clients[$date_debut->format('Y-m-d')] = [
                 'value'=>$nombre_de_client,
@@ -189,7 +189,7 @@ class SimulationControllers {
         $dataCommande = $this->getProduitVendus($datePrecedent->format('Y-m-d'),$date_debut->format('Y-m-d')); 
         $nombre_de_client = $this->getClientsInscritsAvantDate($datePrecedent->format('Y-m-d'));
 
-        return $this->promotion_tous_produit($date_debut, $date_fin, $dataCommande,$nombre_de_client);
+        return $this->promotion_tous_produit($date_debut, $date_fin, $dataCommande,$nombre_de_client,0.1,0.2,0.1);
 
     }
 
