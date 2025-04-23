@@ -1,155 +1,127 @@
--- Création de la base de données
-CREATE DATABASE IF NOT EXISTS SupermarcheDB;
-USE SupermarcheDB;
-
--- 1. Table des Rôles
-CREATE TABLE Roles (
-    RoleID INT PRIMARY KEY AUTO_INCREMENT,
-    NomRole VARCHAR(20) NOT NULL UNIQUE,
-    Permissions TEXT
-);
-
--- 2. Table des Unités
-CREATE TABLE Unites (
-    UniteID INT PRIMARY KEY AUTO_INCREMENT,
-    NomUnite VARCHAR(10) NOT NULL UNIQUE,
-    Symbole VARCHAR(5)
-);
-
--- 3. Table des Catégories
-CREATE TABLE Categories (
-    CategorieID INT PRIMARY KEY AUTO_INCREMENT,
-    NomCategorie VARCHAR(50) NOT NULL,
-    Description TEXT
-);
-
--- 4. Table des Fournisseurs
-CREATE TABLE Fournisseurs (
-    FournisseurID INT PRIMARY KEY AUTO_INCREMENT,
-    Nom VARCHAR(50) NOT NULL,
-    Contact VARCHAR(100),
-    Adresse TEXT,
-    Telephone VARCHAR(20)
-);
-
--- 5. Table des Caisses
-CREATE TABLE Caisse (
-    CaisseID INT PRIMARY KEY AUTO_INCREMENT,
-    NumeroCaisse VARCHAR(10) NOT NULL UNIQUE,
-    Emplacement VARCHAR(50),
-    EstActive BOOLEAN DEFAULT TRUE,
-    DateMiseEnService DATE
-);
-
--- 6. Table des Utilisateurs
-CREATE TABLE Utilisateurs (
-    UtilisateurID INT PRIMARY KEY AUTO_INCREMENT,
-    RoleID INT NOT NULL,
-    NomComplet VARCHAR(50) NOT NULL,
-    Email VARCHAR(100) UNIQUE,
-    Login VARCHAR(30) NOT NULL UNIQUE,
-    MotDePasse VARCHAR(255) NOT NULL,
-    DateCreation DATETIME DEFAULT CURRENT_TIMESTAMP,
-    EstActif BOOLEAN DEFAULT TRUE,
-    FOREIGN KEY (RoleID) REFERENCES Roles(RoleID)
-);
-
--- 7. Table des Clients
-CREATE TABLE Clients (
+CREATE DATABASE IF NOT EXISTS gestion_budget;
+USE gestion_budget;
+-- ======================
+-- TABLE Client
+-- ======================
+CREATE TABLE Client (
     ClientID INT PRIMARY KEY AUTO_INCREMENT,
-    Nom VARCHAR(50) NOT NULL,
-    Prenom VARCHAR(50),
+    Nom VARCHAR(100),
+    Prenom VARCHAR(100),
     Telephone VARCHAR(20),
     Email VARCHAR(100),
     Adresse TEXT,
-    PointsFidelite INT DEFAULT 0,
-    DateInscription DATE
+    Statut VARCHAR(50)
 );
 
--- 8. Table des Produits
-CREATE TABLE Produits (
+-- ======================
+-- TABLE Produit
+-- ======================
+CREATE TABLE Produit (
     ProduitID INT PRIMARY KEY AUTO_INCREMENT,
-    Designation VARCHAR(100) NOT NULL,
-    Prix DECIMAL(10,2) NOT NULL,
-    UniteID INT NOT NULL,
-    QuantiteEnStock INT NOT NULL DEFAULT 0,
-    SeuilAlerte INT DEFAULT 10,
-    CategorieID INT,
-    FournisseurID INT,
-    CodeBarre VARCHAR(50) UNIQUE,
-    EstDiscontinu BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (UniteID) REFERENCES Unites(UniteID),
-    FOREIGN KEY (CategorieID) REFERENCES Categories(CategorieID),
-    FOREIGN KEY (FournisseurID) REFERENCES Fournisseurs(FournisseurID)
+    Nom VARCHAR(100),
+    Categorie VARCHAR(50),
+    Prix DECIMAL(10, 2),
+    Stock INT
 );
 
--- 9. Table des Achats (Transactions)
-CREATE TABLE Achats (
-    AchatID INT PRIMARY KEY AUTO_INCREMENT,
-    DateHeure DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UtilisateurID INT NOT NULL,
-    CaisseID INT NOT NULL,
+-- ======================
+-- TABLE Commande
+-- ======================
+CREATE TABLE Commande (
+    CommandeID INT PRIMARY KEY AUTO_INCREMENT,
     ClientID INT,
-    TotalHT DECIMAL(10,2),
-    TotalTTC DECIMAL(10,2),
-    Remise DECIMAL(10,2) DEFAULT 0,
-    MoyenPaiement VARCHAR(20) NOT NULL,
-    NumeroTicket VARCHAR(20),
-    FOREIGN KEY (UtilisateurID) REFERENCES Utilisateurs(UtilisateurID),
-    FOREIGN KEY (CaisseID) REFERENCES Caisse(CaisseID),
-    FOREIGN KEY (ClientID) REFERENCES Clients(ClientID)
+    DateCommande DATE,
+    MontantTotal DECIMAL(10, 2),
+    Statut VARCHAR(50),
+    FOREIGN KEY (ClientID) REFERENCES Client(ClientID)
 );
 
--- 10. Table des Détails d'Achat
-CREATE TABLE DetailsAchats (
-    DetailID INT PRIMARY KEY AUTO_INCREMENT,
-    AchatID INT NOT NULL,
-    ProduitID INT NOT NULL,
-    CaisseID INT NOT NULL,
-    Quantite INT NOT NULL,
-    PrixUnitaire DECIMAL(10,2) NOT NULL,
-    RemiseUnitaire DECIMAL(10,2) DEFAULT 0,
-    TauxTVA DECIMAL(5,2) NOT NULL,
-    SousTotal DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (AchatID) REFERENCES Achats(AchatID),
-    FOREIGN KEY (ProduitID) REFERENCES Produits(ProduitID),
-    FOREIGN KEY (CaisseID) REFERENCES Caisse(CaisseID)
+-- ======================
+-- TABLE Commande_Produit
+-- ======================
+CREATE TABLE Commande_Produit (
+    CommandeID INT,
+    ProduitID INT,
+    Quantite INT,
+    PrixUnitaire DECIMAL(10, 2),
+    PRIMARY KEY (CommandeID, ProduitID),
+    FOREIGN KEY (CommandeID) REFERENCES Commande(CommandeID),
+    FOREIGN KEY (ProduitID) REFERENCES Produit(ProduitID)
 );
 
--- 11. Table des Mouvements de Stock
-CREATE TABLE MouvementsStock (
-    MouvementID INT PRIMARY KEY AUTO_INCREMENT,
-    ProduitID INT NOT NULL,
-    TypeMouvement VARCHAR(20) NOT NULL,
-    Quantite INT NOT NULL,
-    DateMouvement DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UtilisateurID INT,
-    Raison VARCHAR(100),
-    Reference VARCHAR(50),
-    FOREIGN KEY (ProduitID) REFERENCES Produits(ProduitID),
-    FOREIGN KEY (UtilisateurID) REFERENCES Utilisateurs(UtilisateurID)
+-- ======================
+-- TABLE Employe
+-- ======================
+CREATE TABLE Employe (
+    EmployeID INT PRIMARY KEY AUTO_INCREMENT,
+    Nom VARCHAR(100),
+    Poste VARCHAR(50),
+    Email VARCHAR(100)
 );
 
--- 12. Table des Promotions
-CREATE TABLE Promotions (
-    PromotionID INT PRIMARY KEY AUTO_INCREMENT,
-    ProduitID INT NOT NULL,
-    Debut DATETIME NOT NULL,
-    Fin DATETIME NOT NULL,
-    TypePromotion VARCHAR(20) NOT NULL, -- 'Pourcentage' ou 'Montant'
-    ValeurPromotion DECIMAL(10,2) NOT NULL,
+-- ======================
+-- TABLE ActionClient
+-- ======================
+CREATE TABLE ActionClient (
+    ActionID INT PRIMARY KEY AUTO_INCREMENT,
+    ClientID INT,
+    EmployeID INT,
+    TypeAction VARCHAR(50),
+    CategorieAction VARCHAR(50),
+    DateAction DATE,
     Description TEXT,
-    FOREIGN KEY (ProduitID) REFERENCES Produits(ProduitID)
+    CoutAction DECIMAL(10, 2),
+    StatutAction VARCHAR(50),
+    Resultat VARCHAR(100),
+    FOREIGN KEY (ClientID) REFERENCES Client(ClientID),
+    FOREIGN KEY (EmployeID) REFERENCES Employe(EmployeID)
 );
 
--- 13. Table des Paiements (Optionnelle)
-CREATE TABLE Paiements (
-    PaiementID INT PRIMARY KEY AUTO_INCREMENT,
-    AchatID INT NOT NULL,
-    TypePaiement VARCHAR(20) NOT NULL,
-    Montant DECIMAL(10,2) NOT NULL,
-    DatePaiement DATETIME DEFAULT CURRENT_TIMESTAMP,
-    Reference VARCHAR(50),
-    FOREIGN KEY (AchatID) REFERENCES Achats(AchatID)
+-- ======================
+-- TABLE ReactionClient
+-- ======================
+CREATE TABLE ReactionClient (
+    ReactionID INT PRIMARY KEY AUTO_INCREMENT,
+    ActionID INT,
+    ClientID INT,
+    TypeReaction VARCHAR(100),
+    DateReaction DATE,
+    Contenu TEXT,
+    FOREIGN KEY (ActionID) REFERENCES ActionClient(ActionID),
+    FOREIGN KEY (ClientID) REFERENCES Client(ClientID)
 );
 
+-- ======================
+-- TABLE ActionCommerciale
+-- ======================
+CREATE TABLE ActionCommerciale (
+    ActionCommercialeID INT PRIMARY KEY AUTO_INCREMENT,
+    ActionID INT,
+    Campagne VARCHAR(100),
+    Objectif VARCHAR(255),
+    EstConvertie BOOLEAN,
+    cout DECIMAL(10, 2),
+    FOREIGN KEY (ActionID) REFERENCES ActionClient(ActionID)
+);
+
+-- ======================
+-- TABLE ReactionCommerciale
+-- ======================
+CREATE TABLE ReactionCommerciale (
+    ReactionCommercialeID INT PRIMARY KEY AUTO_INCREMENT,
+    ActionCommercialeID INT,
+    ClientID INT,
+    TypeReaction VARCHAR(100),
+    DateReaction DATE,
+    Contenu TEXT,
+    FOREIGN KEY (ActionCommercialeID) REFERENCES ActionCommerciale(ActionCommercialeID),
+    FOREIGN KEY (ClientID) REFERENCES Client(ClientID)
+);
+
+-- ======================
+-- TABLE Requete budgetaire
+-- ======================
+CREATE TABLE RequeteBudgetaire{
+    id_requete INT PRIMARY KEY AUTO_INCREMENT,
+    valeur DECIMAL(10, 2)
+}
