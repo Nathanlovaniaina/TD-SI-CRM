@@ -155,8 +155,12 @@ class SimulationControllers {
             'commandes' => $commandes,
             'montant_par_moi' => $montant_par_moi,
             'clients' => $clients,
-            'client_obtenue' => $init_client != 0 ? ($nombre_de_client - $init_client) . " (" . ((($nombre_de_client - $init_client) / $init_client) * 100) . " %)" : "0 (0 %)",
-            'commande_obtenue' =>$commandes[$date_debut_copyr->format('Y-m-d')]['value'] != 0 ? ($commandes[$date_debut->format('Y-m-d')]['value'] - $commandes[$date_debut_copyr->format('Y-m-d')]['value']) . " (" . ((($commandes[$date_debut->format('Y-m-d')]['value'] - $commandes[$date_debut_copyr->format('Y-m-d')]['value']) / $commandes[$date_debut_copyr->format('Y-m-d')]['value']) * 100) . " %)" : "0 (0 %)"
+            'client_obtenue' => $init_client != 0 
+            ? number_format($nombre_de_client - $init_client,2) . " (" . number_format((($nombre_de_client - $init_client) / $init_client) * 100, 2) . " %)" 
+            : "0 (0 %)",
+            'commande_obtenue' => $commandes[$date_debut_copyr->format('Y-m-d')]['value'] != 0 
+            ? number_format($commandes[$date_debut->format('Y-m-d')]['value'] - $commandes[$date_debut_copyr->format('Y-m-d')]['value'],2) . " (" . number_format((($commandes[$date_debut->format('Y-m-d')]['value'] - $commandes[$date_debut_copyr->format('Y-m-d')]['value']) / $commandes[$date_debut_copyr->format('Y-m-d')]['value']) * 100, 2) . " %)" 
+            : "0 (0 %)"
         ];
         
     }

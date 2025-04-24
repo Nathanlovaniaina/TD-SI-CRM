@@ -179,6 +179,27 @@
             grid-template-columns: 1fr;
         }
     }
+    .cards-container {
+    display: flex;
+    gap: 20px; /* espace entre les cartes */
+    flex-wrap: wrap;
+}
+
+.card {
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: #fff;
+}
+
+canvas {
+    max-width: 100%;
+    height: 300px;
+}
+
 </style>
 </head>
 <body>
@@ -257,16 +278,25 @@
         </div>
 
         <!-- Section Nombre par mois -->
-        <div class="card">
-            <h3>Nombre de commande par mois</h3>
-            <div class="month-grid">
-                <?php if(isset($stat)) { ?>
-                    <?php foreach($stat['commandes'] as $s): ?>
-                        <div class="month-item"><strong><?= $s['date']?>:</strong> <?= $s['value'] ?> </div>
-                    <?php endforeach ?>
-                <?php }?>
+        <div class="cards-container">
+            <div class="card">
+                <h3>Nombre de commande par mois</h3>
+                <div class="month-grid">
+                    <?php if(isset($stat)) { ?>
+                        <?php foreach($stat['commandes'] as $s): ?>
+                            <div class="month-item"><strong><?= $s['date']?>:</strong> <?= number_format($s['value'],2) ?></div>
+                        <?php endforeach ?>
+                    <?php }?>
+                </div>
+            </div>
+                        
+            <div class="card">
+                <h3>Nombre de commande par mois</h3>
+                <canvas id="commandesChart"></canvas>
             </div>
         </div>
+
+
 
         <!-- Section RAFRAICHE -->
         <div class="card">
@@ -293,27 +323,43 @@
         </div>
 
         <!-- Section Montant par mois -->
-        <div class="card">
-            <h3>Montant par mois</h3>
-            <div class="month-grid">
-                <?php if(isset($stat)) { ?>
-                    <?php foreach($stat['montant_par_moi'] as $s): ?>
-                        <div class="month-item"><strong><?= $s['date']?>:</strong> <?= $s['value'] ?> AR</div>
-                    <?php endforeach ?>
-                <?php }?>
+        <div class="cards-container">
+            <div class="card">
+                <h3>Montant par mois</h3>
+                <div class="month-grid">
+                    <?php if(isset($stat)) { ?>
+                        <?php foreach($stat['montant_par_moi'] as $s): ?>
+                            <div class="month-item"><strong><?= $s['date']?>:</strong> <?= number_format($s['value'],2) ?> AR</div>
+                        <?php endforeach ?>
+                    <?php }?>
+                </div>
+            </div>
+                        
+            <div class="card">
+                <h3>Montant par mois</h3>
+                <canvas id="montantChart"></canvas>
             </div>
         </div>
 
-        <div class="card">
-            <h3>Nombre de client par mois</h3>
-            <div class="month-grid">
-                <?php if(isset($stat)) { ?>
-                    <?php foreach($stat['clients'] as $s): ?>
-                        <div class="month-item"><strong><?= $s['date']?>:</strong> <?= $s['value'] ?> </div>
-                    <?php endforeach ?>
-                <?php }?>
+
+        <div class="cards-container">
+            <div class="card">
+                <h3>Nombre de client par mois</h3>
+                <div class="month-grid">
+                    <?php if(isset($stat)) { ?>
+                        <?php foreach($stat['clients'] as $s): ?>
+                            <div class="month-item"><strong><?= $s['date']?>:</strong> <?= number_format($s['value'],2) ?> </div>
+                        <?php endforeach ?>
+                    <?php }?>
+                </div>
+            </div>
+                        
+            <div class="card">
+                <h3>Nombre de client par mois</h3>
+                <canvas id="clientsChart"></canvas>
             </div>
         </div>
+
 
         <div class="card">
             <h3>BILAN</h3>
@@ -334,6 +380,170 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        <?php if (isset($stat['commandes'])): ?>
+            const labels = <?= json_encode(array_column($stat['commandes'], 'date')) ?>;
+            const dataValues = <?= json_encode(array_column($stat['commandes'], 'value')) ?>;
+        <?php else: ?>
+            const labels = [];
+            const dataValues = [];
+        <?php endif; ?>
+    </script>
+
+<script>
+    const ctx = document.getElementById('commandesChart').getContext('2d');
+    const commandesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Commandes',
+                data: dataValues,
+                backgroundColor: 'rgba(67, 59, 206, 0.7)', // violet clair
+                borderColor: 'rgba(142, 68, 173, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top', // position de la légende
+                    labels: {
+                        boxWidth: 20,
+                        padding: 15
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Nombre par mois',
+                    font: {
+                        size: 18
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                },
+                x: {
+                    ticks: {
+                        maxRotation: 0,
+                        minRotation: 0
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+    <?php if (isset($stat['montant_par_moi'])): ?>
+        const montantLabels = <?= json_encode(array_column($stat['montant_par_moi'], 'date')) ?>;
+        const montantValues = <?= json_encode(array_column($stat['montant_par_moi'], 'value')) ?>;
+    <?php else: ?>
+        const montantLabels = [];
+        const montantValues = [];
+    <?php endif; ?>
+</script>
+
+<script>
+    const ctxMontant = document.getElementById('montantChart').getContext('2d');
+    const montantChart = new Chart(ctxMontant, {
+        type: 'bar',
+        data: {
+            labels: montantLabels,
+            datasets: [{
+                label: 'Montant (AR)',
+                data: montantValues,
+                backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                borderColor: 'rgba(41, 128, 185, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: {
+                    display: true,
+                    text: 'Montant par mois',
+                    font: { size: 18 },
+                    padding: { top: 10, bottom: 30 }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                },
+                x: {
+                    ticks: {
+                        maxRotation: 0,
+                        minRotation: 0
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+    <?php if (isset($stat['clients'])): ?>
+        const clientsLabels = <?= json_encode(array_column($stat['clients'], 'date')) ?>;
+        const clientsValues = <?= json_encode(array_column($stat['clients'], 'value')) ?>;
+    <?php else: ?>
+        const clientsLabels = [];
+        const clientsValues = [];
+    <?php endif; ?>
+</script>
+
+<script>
+    const ctxClients = document.getElementById('clientsChart').getContext('2d');
+    const clientsChart = new Chart(ctxClients, {
+        type: 'bar',
+        data: {
+            labels: clientsLabels,
+            datasets: [{
+                label: 'Clients',
+                data: clientsValues,
+                backgroundColor: 'rgba(241, 196, 15, 0.7)',
+                borderColor: 'rgba(243, 156, 18, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: {
+                    display: true,
+                    text: 'Nombre de client par mois',
+                    font: { size: 18 },
+                    padding: { top: 10, bottom: 30 }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true },
+                x: {
+                    ticks: {
+                        maxRotation: 0,
+                        minRotation: 0
+                    }
+                }
+            }
+        }
+    });
+</script>
+
 
 </body>
 </html>
