@@ -11,39 +11,6 @@ class StatController {
 
 	}
 
-    function getCommandesCreeesAvantDate($dateLimite)
-    {
-        $db = Flight::db();
-
-        try {
-            $date = \DateTime::createFromFormat('Y-m-d', $dateLimite);
-            if (!$date) {
-                throw new InvalidArgumentException("Format de date invalide");
-            }
-
-            $requete = "
-                SELECT COUNT(*) AS total 
-                FROM Commande 
-                WHERE DateCommande < :date_limite
-                AND Statut = 'livree'"; 
-
-            $stmt = $db->prepare($requete);
-            $stmt->bindValue(':date_limite', $dateLimite, PDO::PARAM_STR);
-            $stmt->execute();
-
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            return (int)($result['total'] ?? 0);
-
-        } catch (PDOException $e) {
-            error_log('Erreur getCommandesCreeesAvantDate : ' . $e->getMessage());
-            return 0;
-        } catch (InvalidArgumentException $e) {
-            error_log('Erreur de date : ' . $e->getMessage());
-            return 0;
-        }
-    }
-
 
     function getClientsInscritsAvantDate($dateLimite )
     {
@@ -113,6 +80,48 @@ class StatController {
         } catch (InvalidArgumentException $e) {
             error_log('Erreur de date : ' . $e->getMessage());
             return 0;
+        }
+    }
+
+    function getStatsParCategorie($dateDebut, $dateFin) {
+        $db = Flight::db();
+    
+        try {
+            // Validation des dates
+            $dateStart = \DateTime::createFromFormat('Y-m-d', $dateDebut);
+            $dateEnd = \DateTime::createFromFormat('Y-m-d', $dateFin);
+            
+            if (!$dateStart || !$dateEnd) {
+                throw new InvalidArgumentException("Format de date invalide");
+            }
+    
+            $requete = "
+                SELECT 
+                    p.Categorie,
+                    COUNT(DISTINCT c.CommandeID) AS nombre_commandes,
+                    SUM(cp.Quantite) AS total_quantite,
+                    ROUND(SUM(cp.Quantite * cp.PrixUnitaire), 2) AS montant_total
+                FROM Commande_Produit cp
+                INNER JOIN Produit p ON cp.ProduitID = p.ProduitID
+                INNER JOIN Commande c ON cp.CommandeID = c.CommandeID
+                WHERE c.DateCommande BETWEEN :date_debut AND :date_fin
+                    AND c.Statut = 'livree'
+                GROUP BY p.Categorie
+                ORDER BY total_quantite DESC";
+    
+            $stmt = $db->prepare($requete);
+            $stmt->bindValue(':date_debut', $dateDebut, PDO::PARAM_STR);
+            $stmt->bindValue(':date_fin', $dateFin, PDO::PARAM_STR);
+            $stmt->execute();
+    
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        } catch (PDOException $e) {
+            error_log('Erreur getStatsParCategorie : ' . $e->getMessage());
+            return [];
+        } catch (InvalidArgumentException $e) {
+            error_log('Erreur de date : ' . $e->getMessage());
+            return [];
         }
     }
 
@@ -243,10 +252,11 @@ class StatController {
     public function get_view_post(){
         $ActionDAO = new ActionDAO();
         $Post = Flight::request()->data;
+        $tendance_categorie = $this->getStatsParCategorie($Post['date_debut'],$Post['date_fin']);
         return Flight::render("stat",[
             "stat" => $this->simulationAction($Post['idAction'],$Post['date_debut'],$Post['date_fin']),
             "action"=> $ActionDAO->getById($Post['idAction']),
-            "durer" => $this->calculerNombreMoisEntreDates($Post['date_debut'],$Post['date_fin'])
+            "tendance"=>$tendance_categorie
         ]);
     }
 }

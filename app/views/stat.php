@@ -1,9 +1,16 @@
+<?php $base_url = Flight::get('flight.base_url'); ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
     <title>Statistiques commerciales</title>
+    <link href="<?= $base_url ?>/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
     <style>
         /* Conserver les styles de base de Dolibarr */
         :root {
@@ -45,6 +52,7 @@
         .filter-group h4 {
             color: var(--primary-color);
             margin: 0 0 0.5rem 0;
+            font-size: 15px;
         }
 
         .month-grid {
@@ -200,6 +208,24 @@ canvas {
     height: 300px;
 }
 
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #myTable thead th {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    #myTable tbody td {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+    
+    .table-container {
+        margin: 0.5rem -1rem;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -257,13 +283,26 @@ canvas {
         <!-- Section Nombre par mois -->
         <div class="cards-container">
             <div class="card">
-                <h3>Nombre de commande par mois</h3>
-                <div class="month-grid">
-                    <?php if(isset($stat)) { ?>
-                        <?php foreach($stat['commandes'] as $s): ?>
-                            <div class="month-item"><strong><?= $s['date']?>:</strong> <?= number_format($s['value'],2) ?></div>
-                        <?php endforeach ?>
-                    <?php }?>
+                <h3>Tendance par categorie</h3>
+                <div class="table-container">
+                    <table id="myTable" class="table table-striped table-bordered nowrap" style="width:100%">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Categorie</th>
+                                <th>Quantite</th>
+                                <th>Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach($tendance as $t): ?>
+                                <tr>
+                                    <td><?= $t['Categorie'] ?></td>
+                                    <td><?= $t['total_quantite'] ?></td>
+                                    <td><?= $t['montant_total'] ?></td>
+                                </tr>
+                            <?php endforeach ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
                         
@@ -492,7 +531,32 @@ canvas {
         }
     });
 </script>
+  <script src="<?= $base_url ?>/assets/js/core/jquery-3.7.1.min.js"></script>
+  <script src="<?= $base_url ?>/assets/js/core/popper.min.js"></script>
+  <script src="<?= $base_url ?>/assets/js/core/bootstrap.min.js"></script>
 
+  <!-- DataTables -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <!-- Select2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    
+
+
+  <script>
+      $(document).ready(function() {
+          $('#myTable').DataTable({
+              "paging": true,
+              "searching": true,
+              "ordering": true,
+              "info": true,
+              "lengthMenu": [5, 10, 25, 50, 100],
+              "language": {
+                  "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+              }
+          });
+      });
+  </script>
 
 </body>
 </html>
