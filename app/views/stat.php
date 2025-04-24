@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulation commerciales</title>
+    <title>Statistiques commerciales</title>
     <style>
         /* Conserver les styles de base de Dolibarr */
         :root {
@@ -222,24 +222,12 @@ canvas {
     <!-- Conserver la structure header/sidebar existante -->
 
     <div class="main-content">
-        <h1>Simulation d'action</h1>
+        <h1>Statistiques </h1>
 
         <!-- Section Filtres -->
         
         <div class="card">
-            <form action="simulation" method="post" id="filterForm" class="filters">
-                <!-- Groupe Tiers -->
-                <div class="filter-group">
-                    <h4><label for="tierType">Action</label></h4>
-                    <div class="form-fields">
-                        <select id="tierType" name="idAction" class="dolibarr-select">
-                            <option value="">Selectionner une action</option>
-                            <?php foreach($actions as $a): ?>
-                                <option value="<?php echo $a['ActionCommercialeID']?>"><?php echo $a['Campagne'] ?></option>
-                            <?php endforeach ?>
-                        </select>
-                    </div>
-                </div>
+            <form action="stat" method="post" id="filterForm" class="filters">
 
                 <!-- Groupe Créé par -->
                 <div class="filter-group">
@@ -260,19 +248,8 @@ canvas {
                 <!-- Bouton de validation -->
                 <div class="form-actions">
                     <button type="submit" class="dolibarr-button">
-                        Valider
+                        Appliquer le filtre
                     </button>
-                </div>
-
-                <div class="filter-group">
-                    <h4><label for="tierType">Etat</label></h4>
-                    <div class="form-fields">
-                        <select id="tierType" name="tierType" class="dolibarr-select">
-                            <option value="">Selectionner un etat</option>
-                            <option value="Simulation">Simuler</option>
-                            <option value="Valider">Valider</option>
-                        </select>
-                    </div>
                 </div>
             </form>
         </div>
@@ -293,32 +270,6 @@ canvas {
             <div class="card">
                 <h3>Nombre de commande par mois</h3>
                 <canvas id="commandesChart"></canvas>
-            </div>
-        </div>
-
-
-
-        <!-- Section RAFRAICHE -->
-        <div class="card">
-            <h3>INFORMATION</h3>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-label">Objectif</div>
-                    <div class="stat-value" style="font-size:15px;"><?php if(isset($action)) echo $action['Objectif'] ?></div>
-                </div>
-
-                <div class="stat-item">
-                    <div class="stat-label">Durer</div>
-                    <div class="stat-value" style="font-size:15px;"><?php if(isset($durer)) echo $durer?> mois</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Cout total</div>
-                    <div class="stat-value"><?php if(isset($action)) echo $action['Cout'] * $durer ?> AR</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Cout/mois</div>
-                    <div class="stat-value"><?php if(isset($action)) echo $action['Cout'] ?> AR</div>
-                </div>
             </div>
         </div>
 
@@ -374,8 +325,6 @@ canvas {
                 </div>
                 <div class="stat-item">
                     <div class="stat-label">Montant total</div>
-                    <div class="stat-value"><?php if(isset($action)) echo $action['Cout'] ?> AR</div>
-                    <div>-3%</div>
                 </div>
             </div>
         </div>
