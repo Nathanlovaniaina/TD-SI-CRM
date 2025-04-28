@@ -10,6 +10,9 @@ use app\controllers\SimulationControllers;
 use app\controllers\StatController;
 use flight\Engine;
 use flight\net\Router;
+use app\controllers\ClientController;
+use app\controllers\CommandeController;
+
 // use Flight;
 
 /** 
@@ -54,4 +57,45 @@ $router->post('/stat',function(){
 $router->get('/dashboard',function(){
 	$DashboardController = new DashboardController();
 	$DashboardController->get_view();
+});
+
+
+
+// Route page d'accueil
+Flight::route('/', function() {
+    echo 'Bienvenue sur l\'application !';
+});
+
+// ----------- CLIENTS ----------- //
+
+// Liste des clients
+Flight::route('GET /clients', function() {
+    $controller = new ClientController();
+    $controller->clients();
+});
+
+// Détail d'un client (réactions client + commerciale)
+Flight::route('GET /client/@id', function($id) {
+    $controller = new ClientController();
+    $controller->client_detail($id);
+});
+
+// ----------- COMMANDES ----------- //
+
+// Liste des commandes
+Flight::route('GET /commandes', function() {
+    $controller = new CommandeController();
+    $controller->commandes();
+});
+
+// Ajouter une commande (form POST)
+Flight::route('POST /commande/add', function() {
+    $controller = new CommandeController();
+    $controller->add_commande();
+});
+
+// Supprimer une commande (form POST)
+Flight::route('POST /commande/delete', function() {
+    $controller = new CommandeController();
+    $controller->delete_commande();
 });
