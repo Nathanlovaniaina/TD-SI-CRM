@@ -204,9 +204,44 @@ class SimulationControllers {
         ]);
     }
 
+    public static function calculerBudgetDepartement($id_departement) {
+        $db = Flight::db(); // Connexion PDO
+    
+        $stmt = $db->prepare("SELECT SUM(montant) AS total_budget 
+                              FROM Budget 
+                              WHERE id_departement = :id_departement");
+        $stmt->execute([':id_departement' => $id_departement]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        return $result['total_budget'] ?? 0;
+    }
+
+    public static function ajouterRequeteBudgetaire($valeur) {
+        $db = Flight::db(); // Connexion PDO
+    
+        $stmt = $db->prepare("INSERT INTO RequeteBudgetaire (valeur) VALUES (:valeur)");
+        $stmt->execute([':valeur' => $valeur]);
+    }
+    
+    
+
+    public function verfication_Budget($cout,$dure){
+        $coutTotal = $cout * $dure;
+        $Budget = $this->calculerBudgetDepartement(3);
+        if($coutTotal > $Budget){
+            $this->ajouterRequeteBudgetaire($coutTotal);
+        }
+    }
+
     public function get_view_post(){
         $ActionDAO = new ActionDAO();
         $Post = Flight::request()->data;
+
+        if($Post['tierType']=="Valider"){
+            $action = $ActionDAO->getById($Post['idAction']);
+            $this->verfication_Budget($action['Cout'],$this->calculerNombreMoisEntreDates($Post['date_debut'],$Post['date_fin']));
+        }
+
         return Flight::render("simulation",[
             "actions"=> $ActionDAO->getAll(),
             "stat" => $this->simulationAction($Post['idAction'],$Post['date_debut'],$Post['date_fin']),

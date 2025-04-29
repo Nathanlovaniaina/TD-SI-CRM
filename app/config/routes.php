@@ -32,7 +32,21 @@ $Welcome_Controller = new WelcomeController();
 //$router->get('/', \app\controllers\WelcomeController::class.'->home'); 
 
 $router->get('/',function(){
-	Flight::render('exemple_dolibarr_style');
+	Flight::render('login');
+});
+
+
+$router->post('/login',function(){
+	$WelcomeController = new WelcomeController();
+	$Post = Flight::request()->data;
+	$identifiant = $Post['username'];
+	$mdp = $Post['password'];
+	if($WelcomeController->verifieLogin($identifiant, $mdp)){
+		Flight::redirect('/dashboard');
+		return;
+	}else{
+		Flight::redirect('/');
+	}
 });
 
 $router->get('/simulation',function(){
