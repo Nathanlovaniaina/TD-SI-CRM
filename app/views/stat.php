@@ -294,13 +294,15 @@ canvas {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach($tendance as $t): ?>
-                                <tr>
-                                    <td><?= $t['Categorie'] ?></td>
-                                    <td><?= $t['total_quantite'] ?></td>
-                                    <td><?= $t['montant_total'] ?></td>
-                                </tr>
-                            <?php endforeach ?>
+                            <?php if(isset($tendance)): ?>
+                                <?php foreach($tendance as $t): ?>
+                                    <tr>
+                                        <td><?= $t['Categorie'] ?></td>
+                                        <td><?= $t['total_quantite'] ?></td>
+                                        <td><?= $t['montant_total'] ?></td>
+                                    </tr>
+                                <?php endforeach ?>
+                            <?php endif ?>
                         </tbody>
                     </table>
                 </div>
@@ -361,9 +363,6 @@ canvas {
                 <div class="stat-item">
                     <div class="stat-label">Commande</div>
                     <div class="stat-value"><?php if(isset($stat)) echo $stat['commande_obtenue'] ?></div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Montant total</div>
                 </div>
             </div>
         </div>

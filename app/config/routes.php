@@ -8,6 +8,7 @@ use app\controllers\AchatController;
 use app\controllers\ListeStatistiqueController;
 use app\controllers\SimulationControllers;
 use app\controllers\StatController;
+use app\controllers\ProduitController;
 use flight\Engine;
 use flight\net\Router;
 // use Flight;
@@ -54,4 +55,14 @@ $router->post('/stat',function(){
 $router->get('/dashboard',function(){
 	$DashboardController = new DashboardController();
 	$DashboardController->get_view();
+});
+
+$router->get('/formProduit',function(){
+	$ProduitController = new ProduitController();
+	$ProduitController->createForm();
+});
+
+$router->post('/formProduit',function(){
+	$ProduitController = new ProduitController();
+	$ProduitController->store();
 });
