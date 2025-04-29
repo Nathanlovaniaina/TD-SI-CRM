@@ -8,9 +8,10 @@ use PDO;
 class ProduitController {
     public static function index() {
         $db = Flight::db();
-        $result = $db->query("SELECT * FROM Produits");
-        $produits = $result->fetch_all(MYSQLI_ASSOC);
-        Flight::render('produits/liste.php', ['produits' => $produits]);
+        $stmt = $db->prepare("SELECT * FROM Produit");
+        $stmt->execute();
+        $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        Flight::render('liste.php', ['produits' => $produits]);
     }
 
     public static function createForm() {
@@ -18,33 +19,72 @@ class ProduitController {
     }
 
     public static function store() {
-        $db = Flight::db();
-        $Post = Flight::request()->data;
-
-        $stmt = $db->prepare("INSERT INTO Produits (Designation, Prix, UniteID, QuantiteEnStock, SeuilAlerte, CategorieID, FournisseurID, CodeBarre, EstDiscontinu)
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-        $stmt->bind_param("sdiiiissi",
-            $Post['designation'],
-            $Post['prix'],
-            $Post['unite_id'],
-            $Post['quantite_en_stock'],
-            $Post['seuil_alerte'],
-            $Post['categorie_id'],
-            $Post['fournisseur_id'],
-            $Post['code_barre'],
-            isset($Post['est_discontinu']) ? 1 : 0
-        );
-
-        $stmt->execute();
-        Flight::redirect('/formProduit');
+        // Récupère l’instance PDO
+        $pdo  = Flight::db();
+        $data = Flight::request()->data;
+    
+        // Nettoyage et typage des valeurs
+        $nom       = trim($data['nom']);
+        $categorie = trim($data['categorie']);
+        $prix      = (float) $data['prix'];
+        $stock     = (int)   $data['stock'];
+    
+        // Préparation de la requête avec paramètres nommés
+        $sql = "
+            INSERT INTO Produit (Nom, Categorie, Prix, Stock)
+            VALUES (:nom, :categorie, :prix, :stock)
+        ";
+        $stmt = $pdo->prepare($sql);
+    
+        // Exécution en passant un tableau associatif
+        $stmt->execute([
+            ':nom'       => $nom,
+            ':categorie' => $categorie,
+            ':prix'      => $prix,
+            ':stock'     => $stock,
+        ]);
+    
+        // Redirection après insertion
+        Flight::redirect('/produits');
     }
+    
 
     public static function delete($id) {
         $db = Flight::db();
-        $stmt = $db->prepare("DELETE FROM Produits WHERE ProduitID = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        Flight::redirect('/produits');
+        
+        try {
+            // Check si le produit existe
+            $check = $db->prepare("SELECT ProduitID FROM Produit WHERE ProduitID = :id");
+            $check->execute([':id' => $id]);
+            $exists = $check->fetch(PDO::FETCH_ASSOC);
+            
+            if(!$exists) {
+                Flight::redirect('/produits?error=Produit non trouvé');
+                return;
+            }
+    
+            // Check commandes liées
+            $cmd_prod = $db->prepare("SELECT CommandeID FROM Commande_Produit WHERE ProduitID = :id");
+            $cmd_prod->execute([':id' => $id]);
+            $has_dependencies = $cmd_prod->fetchAll();
+    
+            if(count($has_dependencies) > 0) {
+                // Suppression des liaisons
+                $del_liaisons = $db->prepare("DELETE FROM Commande_Produit WHERE ProduitID = :id");
+                $del_liaisons->execute([':id' => $id]);
+            }
+    
+            // Suppression principale
+            $stmt = $db->prepare("DELETE FROM Produit WHERE ProduitID = :id");
+            $stmt->execute([':id' => $id]);
+    
+            Flight::redirect('/produits?success=Supprimé');
+    
+        } catch (PDOException $e) {
+            Flight::redirect("/produits?error=Erreur: ".urlencode($e->getMessage()));
+        } finally {
+            // Fermeture implicite avec PDO
+            $db = null;
+        }
     }
 }

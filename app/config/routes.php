@@ -70,12 +70,15 @@ $router->post('/formProduit',function(){
 	$ProduitController->store();
 });
 
-
-// Route page d'accueil
-Flight::route('/', function() {
-    echo 'Bienvenue sur l\'application !';
+$router->get('/produits',function(){
+	$ProduitController = new ProduitController();
+	$ProduitController->index();
 });
 
+$router->get('/produits/supprimer/@id',function($id){
+	$ProduitController = new ProduitController();
+	$ProduitController->delete($id);
+});
 // ----------- CLIENTS ----------- //
 
 // Liste des clients

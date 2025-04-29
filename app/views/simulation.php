@@ -209,13 +209,12 @@ canvas {
 
     <div class="sidebar">
         <nav class="sidebar-nav">
-            <a href="#" class="active">🏠 Accueil</a>
-            <a href="#">👥 Clients</a>
-            <a href="#">📦 Produits</a>
-            <a href="#">📋 Commandes</a>
-            <a href="#">📞 Actions Client</a>
-            <a href="#">📣 Actions Com.</a>
-            <a href="#">💰 Budget</a>
+            <a href="dashboard" >Accueil</a>
+            <a href="clients" >Clients</a>
+            <a href="produits" >Produits</a>
+            <a href="commandes">Commandes</a>
+            <a href="stat">Statistique</a>
+            <a href="simulation" class="active">Simulation</a>
         </nav>
     </div>
 
