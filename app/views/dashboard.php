@@ -203,16 +203,203 @@
             </div>
 
             <div class="card">
-                <h3>🏆 Produits les + vendus</h3>
-                <ul>
-                    <?php foreach($produits_plus_vendus as $produit): ?>
-                        <li><?= htmlspecialchars($produit['produit']) ?> - <?= htmlspecialchars($produit['total_vendu']) ?> vendus</li>
-                    <?php endforeach; ?>
-                </ul>
+                <h3>📦 Nombre de produits commandés par catégorie</h3>
+                <div class="chart-container" style="position: relative; height: 300px;">
+                    <canvas id="prodCatChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>👥 Répartition clients par sexe</h3>
+                <div class="chart-container" style="position: relative; height: 300px;">
+                    <canvas id="genreChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>👥 Clients par classification</h3>
+                <div class="chart-container" style="position: relative; height: 300px;">
+                    <canvas id="trancheAgeChart"></canvas>
+                </div>
             </div>
 
         </div>
     </div>
+                        <!-- EN TÊTE ou juste avant ton <script> de création de chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+    // Sérialisation PHP → JS
+    <?php
+        // $stats contient ['Le Jeune'=>12, 'Parent'=>8, …]
+        $stats = $nombre_clients_par_tranche_age;
+    ?>
+    const trancheLabels = <?= json_encode(array_keys($stats), JSON_UNESCAPED_UNICODE) ?>;
+    const trancheValues = <?= json_encode(array_values($stats)) ?>;
+
+    // Création du camembert (doughnut)
+    const ctxTranche = document.getElementById('trancheAgeChart').getContext('2d');
+    new Chart(ctxTranche, {
+        type: 'doughnut',
+        data: {
+            labels: trancheLabels,
+            datasets: [{
+                data: trancheValues,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed;
+                            const total = trancheValues.reduce((sum, v) => sum + v, 0);
+                            const percent = total ? (value / total * 100).toFixed(2) : 0;
+                            return `${label}: ${percent}% (${value})`;
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Répartition des clients par classification',
+                    font: { size: 16 },
+                    padding: { bottom: 10 }
+                }
+            }
+        }
+    });
+</script>
+
+    <!-- Chart.js (ajoute le CDN une seule fois) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sérialisation PHP→JS
+        <?php if (!empty($nd_clients_par_genre)): ?>
+            const genreData = <?= json_encode($nd_clients_par_genre) ?>;
+        <?php else: ?>
+            const genreData = {};
+        <?php endif; ?>
+
+        // Préparation des labels et valeurs
+        const labels = Object.keys(genreData);
+        const values = Object.values(genreData);
+
+        // Création du camembert (doughnut)
+        const ctx = document.getElementById('genreChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    /* Tu peux personnaliser ces couleurs ou en générer dynamiquement */
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',   // ex. Hommes
+                        'rgba(54, 162, 235, 0.6)',   // ex. Femmes
+                        'rgba(255, 206, 86, 0.6)'    // ex. Autres
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed;
+                                const total = values.reduce((sum, v) => sum + v, 0);
+                                const percent = total ? (value / total * 100).toFixed(2) : 0;
+                                return `${label}: ${percent}% (${value})`;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Clients par genre',
+                        font: { size: 16 },
+                        padding: { bottom: 10 }
+                    }
+                }
+            }
+        });
+    </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Sérialisation PHP → JS
+    const dataCat = <?= json_encode($nombre_produits_commandes_par_categorie ?? [], JSON_UNESCAPED_UNICODE) ?>;
+    const labels = Object.keys(dataCat);
+    const values = Object.values(dataCat);
+
+    // 2. Vérifie la console
+    console.log('Catégories:', labels, 'Valeurs:', values);
+
+    // 3. Création du camembert
+    const ctx = document.getElementById('prodCatChart');
+    if (!ctx) {
+        console.error('Canvas #prodCatChart introuvable');
+        return;
+    }
+    new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)',
+                    'rgba(255, 159, 64, 0.6)',
+                    'rgba(199, 199, 199, 0.6)',
+                    'rgba(83, 102, 255, 0.6)'
+                ].slice(0, labels.length),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: context => {
+                            const lbl = context.label;
+                            const val = context.parsed;
+                            const total = values.reduce((a, b) => a + b, 0);
+                            const pct = total ? (val / total * 100).toFixed(2) : 0;
+                            return `${lbl}: ${pct}% (${val})`;
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Produits commandés par catégorie',
+                    padding: { bottom: 10 }
+                }
+            }
+        }
+    });
+});
+</script>
 
 </body>
 </html>

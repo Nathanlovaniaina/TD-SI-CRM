@@ -132,3 +132,16 @@ ALTER TABLE Client
   ADD COLUMN DateInscription DATE NOT NULL
     DEFAULT CURRENT_DATE
     AFTER Adresse;
+
+ALTER TABLE Client
+ADD COLUMN Age INT;
+
+ALTER TABLE Client
+ADD COLUMN Genre VARCHAR(20);
+
+CREATE TABLE TrancheAge (
+    TrancheID       INT            PRIMARY KEY AUTO_INCREMENT,
+    Intitule        VARCHAR(50)    NOT NULL,
+    AgeMin          INT            NOT NULL,
+    AgeMax          INT            NOT NULL
+);

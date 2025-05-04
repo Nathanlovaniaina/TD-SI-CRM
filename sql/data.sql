@@ -53,3 +53,50 @@ INSERT INTO Commande_Produit (CommandeID, ProduitID, Quantite, PrixUnitaire) VAL
 INSERT INTO RequeteBudgetaire (valeur) VALUES
 (5000.00),
 (12000.00);
+
+INSERT INTO TrancheAge (Intitule, AgeMin, AgeMax) VALUES
+  ('Jeune',               18, 25),
+  ('Parent',                 30, 45),
+  ('Professionnel Élégant', 35, 50),
+  ('Adolescent(e)',       13, 17),
+  ('Travailleur',         25, 55);
+
+-- 1. Clients
+INSERT INTO Client (Nom, Prenom, Telephone, Email, Adresse, Statut, DateInscription, Age, Genre) VALUES
+  ('Ranaivoson',    'Miora', '0341234567', 'miora.r@example.com',    'Analakely, Antananarivo',     'Actif', '2025-01-15', 22, 'Femme'),
+  ('Rakotoarisoa',  'Jean',   '0337654321', 'jean.r@example.com',     'Isoraka, Antananarivo',       'Actif', '2025-02-10', 34, 'Homme'),
+  ('Andriamanana',  'Lucie',  '0321122334', 'lucie.a@example.com',    'Ankorondrano, Antananarivo',  'Inactif','2025-03-05', 28, 'Femme'),
+  ('Rasoa',         'Hery',   '0349988776', 'hery.r@example.com',     'Ambohizato, Antananarivo',    'Actif', '2025-04-01', 16, 'Homme'),
+  ('Rakotondrainy','Fanja',   '0334455667', 'fanja.r@example.com',    'Ivandry, Antananarivo',       'Actif', '2025-04-15', 42, 'Femme');
+
+-- 2. Produits
+INSERT INTO Produit (Nom, Categorie, Prix, Stock) VALUES
+  ('AirMax Sneakers',          'Sneakers',            75.00, 50),
+  ('Sunshine Sandales',        'Sandales',            35.00, 30),
+  ('Urban Chic Mocassins',     'Chaussures de ville', 120.00, 20),
+  ('TrailBlazer Running',      'Chaussures de sport', 90.00,  40);
+
+-- 3. Commandes
+-- On précise MontantTotal calculé à l’avance pour éviter les expressions en SQL
+INSERT INTO Commande (ClientID, DateCommande, MontantTotal, Statut) VALUES
+  (1, '2025-04-20', 145.00, 'Livrée'),    -- 1×75 + 2×35  = 145
+  (2, '2025-05-01', 210.00, 'En cours'),  -- 1×120 + 1×90 = 210
+  (3, '2025-04-28', 105.00, 'Annulée'),   -- 3×35         = 105
+  (4, '2025-05-02', 165.00, 'En cours');  -- 1×90 + 1×75  = 165
+
+-- 4. Détails des Commandes (Commande_Produit)
+INSERT INTO Commande_Produit (CommandeID, ProduitID, Quantite, PrixUnitaire) VALUES
+  -- Commande #1 (ID=1)
+  (1, 1, 1, 75.00),
+  (1, 2, 2, 35.00),
+
+  -- Commande #2 (ID=2)
+  (2, 3, 1, 120.00),
+  (2, 4, 1, 90.00),
+
+  -- Commande #3 (ID=3)
+  (3, 2, 3, 35.00),
+
+  -- Commande #4 (ID=4)
+  (4, 4, 1, 90.00),
+  (4, 1, 1, 75.00);

@@ -235,7 +235,7 @@
 
 <div class="main-content">
     <h1>Gestion des Produits</h1>
-    <a href="/produits/ajouter" class="add-product-btn">➕ Ajouter un produit</a>
+    <a href="/formProduit" class="add-product-btn">➕ Ajouter un produit</a>
 
     <div class="table-responsive">
         <table class="products-table">
