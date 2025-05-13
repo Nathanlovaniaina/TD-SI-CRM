@@ -215,6 +215,7 @@ canvas {
             <a href="commandes">Commandes</a>
             <a href="stat">Statistique</a>
             <a href="simulation" class="active">Simulation</a>
+            <a href="actioncommercial">Actions Commerciales</a>
         </nav>
     </div>
 

@@ -6,6 +6,6 @@ class ActionDAO extends GenericDAO
 {
     public function __construct()
     {
-        parent::__construct('ActionCommerciale', ['Campagne','Objectif','EstConvertie','Cout'], 'ActionCommercialeID');
+        parent::__construct('ActionCommerciale', ['Campagne','Objectif','EstConvertie','Cout','ClientRate','CommandeRate','PrixRate'], 'ActionCommercialeID');
     }
 }

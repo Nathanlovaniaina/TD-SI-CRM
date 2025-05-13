@@ -160,6 +160,7 @@
             <a href="commandes">Commandes</a>
             <a href="stat">Statistique</a>
             <a href="simulation">Simulation</a>
+            <a href="actioncommercial">Actions Commerciales</a>
         </nav>
     </div>
 
@@ -167,12 +168,10 @@
         <h1>Vue d'ensemble</h1>
         <div class="card-grid">
             <div class="card">
-                <h3>📊 KPI</h3>
+                <h3>📊 Information divers</h3>
                 <ul>
                     <li><strong>Clients Totals : </strong> <?= $nb_clients ?></li>
                     <li><strong>Commandes : </strong> <?= $nb_commandes ?></li>
-                    <li><strong>Chiffre d'affaires : </strong> €15,340</li>
-                    <li><strong>Taux conversion : </strong> 45%</li>
                 </ul>
             </div>
 
@@ -194,13 +193,13 @@
                 </ul>
             </div>
 
-            <div class="card">
+            <!-- <div class="card">
                 <h3>💼 Actions Commerciales</h3>
                 <ul>
                     <li>Promo printemps - 01/04 → 30/04 - Coût €1,200</li>
                     <li>Offre Été - 10/06 → 20/06 - Coût €900</li>
                 </ul>
-            </div>
+            </div> -->
 
             <div class="card">
                 <h3>📦 Nombre de produits commandés par catégorie</h3>

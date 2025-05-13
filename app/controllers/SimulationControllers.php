@@ -103,6 +103,7 @@ class SimulationControllers {
             $stmt = $db->prepare($requete);
             
             // Binding sécurisé des paramètres
+            echo $dateFin;
             $stmt->bindValue(':date_debut', $dateDebut, PDO::PARAM_STR);
             $stmt->bindValue(':date_fin', $dateFin, PDO::PARAM_STR);
             
@@ -185,16 +186,15 @@ class SimulationControllers {
         return abs($totalMois); // Retourne la valeur absolue
     }
 
-    public function simulationAction($idAction,$date_debut,$date_fin){
+    public function simulationAction($idAction,$date_debut,$date_fin,$action){
         $date_debut = new \DateTime($date_debut);
         $date_fin = new \DateTime($date_fin);
         $datePrecedent = clone $date_debut;
         $datePrecedent->modify('-1 month');
-        $dataCommande = $this->getProduitVendus($datePrecedent->format('Y-m-d'),$date_debut->format('Y-m-d')); 
+        $dataCommande = $this->getProduitVendus($datePrecedent->format('Y-m-d'),$date_fin->format('Y-m-d')); 
         $nombre_de_client = $this->getClientsInscritsAvantDate($datePrecedent->format('Y-m-d'));
 
-        return $this->promotion_tous_produit($date_debut, $date_fin, $dataCommande,$nombre_de_client,0.1,0.2,0.1);
-
+        return $this->promotion_tous_produit($date_debut, $date_fin, $dataCommande,$nombre_de_client,$action['ClientRate'],$action['CommandeRate'],$action['PrixRate']);
     }
 
     public function get_view(){
@@ -236,15 +236,14 @@ class SimulationControllers {
     public function get_view_post(){
         $ActionDAO = new ActionDAO();
         $Post = Flight::request()->data;
-
+        $action = $ActionDAO->getById($Post['idAction']);
         if($Post['tierType']=="Valider"){
-            $action = $ActionDAO->getById($Post['idAction']);
             $this->verfication_Budget($action['Cout'],$this->calculerNombreMoisEntreDates($Post['date_debut'],$Post['date_fin']));
         }
 
         return Flight::render("simulation",[
             "actions"=> $ActionDAO->getAll(),
-            "stat" => $this->simulationAction($Post['idAction'],$Post['date_debut'],$Post['date_fin']),
+            "stat" => $this->simulationAction($Post['idAction'],$Post['date_debut'],$Post['date_fin'],$action),
             "action"=> $ActionDAO->getById($Post['idAction']),
             "durer" => $this->calculerNombreMoisEntreDates($Post['date_debut'],$Post['date_fin'])
         ]);

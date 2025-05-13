@@ -13,6 +13,7 @@ use flight\Engine;
 use flight\net\Router;
 use app\controllers\ClientController;
 use app\controllers\CommandeController;
+use app\controllers\ActionCommercialeController;
 
 // use Flight;
 
@@ -99,6 +100,26 @@ $router->get('/produits/supprimer/@id',function($id){
 Flight::route('GET /clients', function() {
     $controller = new ClientController();
     $controller->clients();
+});
+
+//Action commercial
+Flight::route('GET /actioncommercial', function() {
+    $controller = new ActionCommercialeController();
+    $controller->actionsCommerciales();
+});
+
+$router->get('/actioncommercialForm',function(){
+	Flight::render('actioncommercialForm');
+});
+
+$router->post('/action-commerciale/add',function(){
+	$ActionCommercialeController = new ActionCommercialeController();
+	$ActionCommercialeController->add_action_commerciale();
+});
+
+$router->post('/actioncommercial/delete',function(){
+	$ActionCommercialeController = new ActionCommercialeController();
+	$ActionCommercialeController->delete_action_commerciale();
 });
 
 // Détail d'un client (réactions client + commerciale)

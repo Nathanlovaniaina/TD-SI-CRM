@@ -145,3 +145,8 @@ CREATE TABLE TrancheAge (
     AgeMin          INT            NOT NULL,
     AgeMax          INT            NOT NULL
 );
+
+ALTER TABLE ActionCommerciale
+ADD COLUMN ClientRate DECIMAL(5,2) NULL,
+ADD COLUMN CommandeRate DECIMAL(5,2) NULL,
+ADD COLUMN PrixRate DECIMAL(5,2) NULL;

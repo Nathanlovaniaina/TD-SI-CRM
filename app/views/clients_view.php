@@ -223,6 +223,7 @@
             <a href="commandes">Commandes</a>
             <a href="stat">Statistique</a>
             <a href="simulation">Simulation</a>
+            <a href="actioncommercial">Actions Commerciales</a>
         </nav>
     </div>
     <div class="main-content">
