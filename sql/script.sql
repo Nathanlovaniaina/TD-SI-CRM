@@ -343,6 +343,7 @@ JOIN AffectationTicket at ON t.id_ticket = at.id_ticket
 JOIN RequeteClient r ON at.id_requete = r.id_requete
 JOIN Etat_requete e ON r.id_etat = e.id_etat
 JOIN Agent a ON at.id_agent = a.id_agent;
+
 INSERT INTO RequeteClient (id_client, Sujet, Description, Date_creation, FichierJoint, id_etat) VALUES
 -- Requête 1 (ouverte)
 (1, 'Problème de connexion', 'Je ne parviens pas à me connecter à mon compte depuis hier matin.', '2023-10-15 09:23:45', NULL, 1),

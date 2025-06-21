@@ -83,14 +83,12 @@ class RequetClientControler {
     ]);
 }
 
-public static function getRequeteDetails($id_requete)
-    {
-        $db = Flight::db();
-        
-        try {
-            // 1. Informations de base de la requête
-            $requete = $db->query("
-                SELECT rc.*, 
+public static function getRequeteDetails($id_requete) {
+    $db = Flight::db();
+    
+    try {
+        // 1. Informations de base de la requête
+        $sql = "SELECT rc.*, 
                        c.Nom AS client_nom, 
                        c.Prenom AS client_prenom,
                        c.Email AS client_email,
@@ -99,62 +97,69 @@ public static function getRequeteDetails($id_requete)
                 FROM RequeteClient rc
                 JOIN Client c ON rc.id_client = c.ClientID
                 JOIN Etat_requete er ON rc.id_etat = er.id_etat
-                WHERE rc.id_requete = ?
-            ",[$id_requete])->fetch(PDO::FETCH_ASSOC);
+                WHERE rc.id_requete = :id_requete";
+        
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':id_requete', $id_requete, PDO::PARAM_INT);
+        $stmt->execute();
+        $requete = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if (!$requete) {
-                Flight::notFound();
-                return;
-            }
+        if (!$requete) {
+            Flight::notFound();
+            return;
+        }
 
-            // 2. Historique des agents assignés
-            $agentsAssignes = $db->query("
-                SELECT at.*, 
-                       e.Nom AS agent_nom, 
-                       e.Prenom AS agent_prenom,
+        // 2. Historique des agents assignés
+        $sql = "SELECT at.*, 
+                       e.Nom AS agent_nom,
                        e.Email AS agent_email
                 FROM AffectationTicket at
                 JOIN Agent a ON at.id_agent = a.id_agent
                 JOIN Employe e ON a.id_employe = e.EmployeID
-                WHERE at.id_requete = ?
-                ORDER BY at.date_affectation DESC
-            ", [$id_requete])->fetchAll(PDO::FETCH_ASSOC);
+                WHERE at.id_requete = :id_requete
+                ORDER BY at.date_affectation DESC";
+        
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':id_requete', $id_requete, PDO::PARAM_INT);
+        $stmt->execute();
+        $agentsAssignes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // 3. Historique des messages du chat
-            $messagesChat = $db->query("
-                SELECT ct.*,
+        // 3. Historique des messages du chat
+        $sql = "SELECT ct.*,
                        CASE 
                            WHEN ct.id_agent IS NOT NULL THEN e.Nom
                            ELSE c.Nom
-                       END AS expediteur_nom,
-                       CASE 
-                           WHEN ct.id_agent IS NOT NULL THEN e.Prenom
-                           ELSE c.Prenom
-                       END AS expediteur_prenom
+                       END AS expediteur_nom
                 FROM ChatTicket ct
                 LEFT JOIN Agent a ON ct.id_agent = a.id_agent
                 LEFT JOIN Employe e ON a.id_employe = e.EmployeID
                 LEFT JOIN Client c ON ct.id_client = c.ClientID
-                WHERE ct.id_ticket = ?
-                ORDER BY ct.date_envoi ASC
-            ", [$id_requete])->fetchAll(PDO::FETCH_ASSOC);
+                WHERE ct.id_ticket = :id_requete
+                ORDER BY ct.date_envoi ASC";
+        
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':id_requete', $id_requete, PDO::PARAM_INT);
+        $stmt->execute();
+        $messagesChat = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // 4. Évaluations associées
-            $evaluations = $db->query("
-                SELECT et.*, 
-                       e.Nom AS evaluateur_nom,
-                       e.Prenom AS evaluateur_prenom
+        // 4. Évaluations associées (version corrigée)
+        $sql = "SELECT et.*, 
+                       c.Nom AS evaluateur_nom
                 FROM EvaluationTicket et
-                JOIN Client c ON et.id_client = c.ClientID
-                WHERE et.id_ticket = ?
-                ORDER BY et.date_evaluation DESC
-            ", [$id_requete])->fetchAll(PDO::FETCH_ASSOC);
+                JOIN AffectationTicket at ON et.id_affectation = at.id_affectation
+                JOIN RequeteClient rc ON at.id_requete = rc.id_requete
+                JOIN Client c ON rc.id_client = c.ClientID
+                WHERE et.id_ticket = :id_requete
+                ORDER BY et.date_evaluation DESC";
+        
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':id_requete', $id_requete, PDO::PARAM_INT);
+        $stmt->execute();
+        $evaluations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // 5. Liste des agents disponibles pour réassignation
-            $agentsDisponibles = $db->query("
-                SELECT a.id_agent, 
+        // 5. Liste des agents disponibles pour réassignation
+        $sql = "SELECT a.id_agent, 
                        e.Nom, 
-                       e.Prenom,
                        e.Email,
                        COUNT(at.id_affectation) AS nb_requetes_actives
                 FROM Agent a
@@ -172,73 +177,79 @@ public static function getRequeteDetails($id_requete)
                     )
                 WHERE a.disponible = 1
                 GROUP BY a.id_agent
-                ORDER BY nb_requetes_actives ASC, e.Nom ASC
-            ")->fetchAll(PDO::FETCH_ASSOC);
+                ORDER BY nb_requetes_actives ASC, e.Nom ASC";
+        
+        $agentsDisponibles = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-            Flight::render('requete_details', [
-                'requete' => $requete,
-                'agentsAssignes' => $agentsAssignes,
-                'messagesChat' => $messagesChat,
-                'evaluations' => $evaluations,
-                'agentsDisponibles' => $agentsDisponibles,
-                'base_url' => Flight::get('flight.base_url')
-            ]);
+        return Flight::render("requete_details", [
+            'requete' => $requete,
+            'agentsAssignes' => $agentsAssignes,
+            'messagesChat' => $messagesChat,
+            'evaluations' => $evaluations,
+            'agentsDisponibles' => $agentsDisponibles,
+            'base_url' => Flight::get('flight.base_url')
+        ]);
 
-        } catch (PDOException $e) {
-            Flight::error($e);
-        }
+    } catch (PDOException $e) {
+        Flight::error($e);
     }
-
-    public static function assignerAgent($id_requete)
-    {
-        $data = Flight::request()->data;
-        $db = Flight::db();
-
-        try {
-            // Désactiver les anciennes affectations
-            $db->prepare("
-                UPDATE AffectationTicket 
+}
+public static function assignerAgent($id_requete) {
+    $db = Flight::db();
+    $data = Flight::request()->data;
+    
+    try {
+        // Désactiver les anciennes affectations
+        $sql = "UPDATE AffectationTicket 
                 SET is_valide = 0 
-                WHERE id_requete = ?
-            ")->execute([$id_requete]);
+                WHERE id_requete = :id_requete";
+        
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':id_requete', $id_requete, PDO::PARAM_INT);
+        $stmt->execute();
 
-            // Créer la nouvelle affectation
-            $stmt = $db->prepare("
-                INSERT INTO AffectationTicket 
+        // Créer la nouvelle affectation
+        $sql = "INSERT INTO AffectationTicket 
                 (id_ticket, id_requete, id_agent, is_valide, date_affectation) 
                 VALUES (
-                    (SELECT id_ticket FROM Ticket WHERE id_requete = ?),
-                    ?,
-                    ?,
+                    (SELECT id_ticket FROM Ticket WHERE id_requete = :id_requete),
+                    :id_requete,
+                    :id_agent,
                     1,
                     NOW()
-                )
-            ");
-            $stmt->execute([$id_requete, $id_requete, $data->id_agent]);
+                )";
+        
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':id_requete', $id_requete, PDO::PARAM_INT);
+        $stmt->bindValue(':id_agent', $data->id_agent, PDO::PARAM_INT);
+        $stmt->execute();
 
-            // Mettre à jour l'état de la requête
-            $db->prepare("
-                UPDATE RequeteClient 
+        // Mettre à jour l'état de la requête
+        $sql = "UPDATE RequeteClient 
                 SET id_etat = (
                     SELECT id_etat 
                     FROM Etat_requete 
                     WHERE libelle = 'en_cours'
                 ) 
-                WHERE id_requete = ?
-            ")->execute([$id_requete]);
+                WHERE id_requete = :id_requete";
+        
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':id_requete', $id_requete, PDO::PARAM_INT);
+        $stmt->execute();
 
-            Flight::json([
-                'success' => true,
-                'message' => 'Agent assigné avec succès'
-            ]);
+        // Retourner une réponse JSON
+        Flight::json([
+            'success' => true,
+            'message' => 'Agent assigné avec succès'
+        ]);
 
-        } catch (PDOException $e) {
-            Flight::json([
-                'success' => false,
-                'message' => 'Erreur lors de l\'assignation',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+    } catch (PDOException $e) {
+        Flight::json([
+            'success' => false,
+            'message' => 'Erreur lors de l\'assignation',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 	
 }

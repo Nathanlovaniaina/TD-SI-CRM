@@ -7,182 +7,12 @@
     <title>Détails Requête #<?= htmlspecialchars($requete['id_requete']) ?> | CRM</title>
     <link rel="stylesheet" href="<?= $base_url ?>/assets/css/requeteDetails.css">
     <style>
-        :root {
-            --primary-color: #1b3e6f;
-            --secondary-color: #2e5392;
-            --accent-color: #4169e1;
-            --text-light: #ffffff;
-            --background: #f5f5f5;
-            --card-bg: #ffffff;
-            --border-color: #e0e0e0;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--background);
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-
-        header {
-            background-color: var(--primary-color);
-            color: var(--text-light);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .container {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            min-height: calc(100vh - 60px);
-        }
-
-        .sidebar {
-            background-color: var(--secondary-color);
-            padding: 1rem 0;
-        }
-
-        .sidebar-nav {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .sidebar-nav a {
-            display: block;
-            color: var(--text-light);
-            padding: 0.75rem 1.5rem;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .sidebar-nav a:hover {
-            background-color: var(--accent-color);
-            padding-left: 2rem;
-        }
-
-        .sidebar-nav a.active {
-            background-color: var(--accent-color);
-            font-weight: 500;
-        }
-
-        .main-content {
-            padding: 2rem;
-        }
-
-        .section {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        h1, h2, h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .status-ouvert { background-color: #fff3cd; color: #856404; }
-        .status-assigne { background-color: #cce5ff; color: #004085; }
-        .status-en_cours { background-color: #e2e3e5; color: #383d41; }
-        .status-resolu { background-color: #d4edda; color: #155724; }
-        .status-ferme { background-color: #f8d7da; color: #721c24; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .chat-container {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 1rem;
-        }
-
-        .message {
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px dashed var(--border-color);
-        }
-
-        .message:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-        }
-
-        .assign-form {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 1rem;
-            align-items: end;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        select, button {
-            padding: 0.5rem;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-        }
-
-        button {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 1rem;
-            color: var(--accent-color);
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
 <header>
-    <h2>CRM - Détails de la Requête</h2>
+    <h2>CRM - Gestion des Requêtes</h2>
 </header>
-
 <div class="container">
     <div class="sidebar">
         <nav class="sidebar-nav">
@@ -239,7 +69,6 @@
             <h3>Agent actuel</h3>
             <?php if (!empty($agentsAssignes) && $agentsAssignes[0]['is_valide']): ?>
                 <p><?= htmlspecialchars($agentsAssignes[0]['agent_nom']) ?> 
-                <?= htmlspecialchars($agentsAssignes[0]['agent_prenom']) ?> 
                 (depuis le <?= date('d/m/Y', strtotime($agentsAssignes[0]['date_affectation'])) ?>)</p>
             <?php else: ?>
                 <p>Aucun agent actuellement assigné</p>
@@ -254,7 +83,7 @@
                         <?php foreach ($agentsDisponibles as $agent): ?>
                         <option value="<?= $agent['id_agent'] ?>">
                             <?= htmlspecialchars($agent['Nom']) ?> 
-                            <?= htmlspecialchars($agent['Prenom']) ?>
+                            <?= htmlspecialchars($agent['Email']) ?>
                             (<?= $agent['nb_requetes_actives'] ?> requêtes)
                         </option>
                         <?php endforeach; ?>
@@ -275,7 +104,7 @@
                 <tbody>
                     <?php foreach ($agentsAssignes as $agent): ?>
                     <tr>
-                        <td><?= htmlspecialchars($agent['agent_nom']) ?> <?= htmlspecialchars($agent['agent_prenom']) ?></td>
+                        <td><?= htmlspecialchars($agent['agent_nom']) ?></td>
                         <td><?= date('d/m/Y H:i', strtotime($agent['date_affectation'])) ?></td>
                         <td><?= $agent['is_valide'] ? 'Actif' : 'Inactif' ?></td>
                     </tr>
