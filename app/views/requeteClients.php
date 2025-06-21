@@ -101,9 +101,9 @@
                     </td>
                     <td>
                         <div class="action-buttons">
-                            <a href="<?= $base_url ?>/requeteClient/details/<?= $requete['id_requete'] ?>" class="action-btn view-btn">👁️ Voir</a>
-                            <a href="<?= $base_url ?>/requeteClient/modifier/<?= $requete['id_requete'] ?>" class="action-btn edit-btn">✏️ Modifier</a>
-                            <a href="<?= $base_url ?>/requeteClient/supprimer/<?= $requete['id_requete'] ?>" class="action-btn delete-btn" onclick="return confirm('Confirmer la suppression ?')">🗑️ Supprimer</a>
+                            <a href="<?= $base_url ?>/requeteClient/details/<?= $requete['id_requete'] ?>" class="action-btn view-btn">Voir</a>
+                            <!-- <a href="<?= $base_url ?>/requeteClient/modifier/<?= $requete['id_requete'] ?>" class="action-btn edit-btn">✏️ Modifier</a> -->
+                            <a href="<?= $base_url ?>/requeteClient/supprimer/<?= $requete['id_requete'] ?>" class="action-btn delete-btn" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
                         </div>
                     </td>
                 </tr>

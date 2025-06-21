@@ -167,3 +167,19 @@ Flight::route('POST /requeteClient/affecter', function() {
     $controller = new RequetClientControler();
     $controller->affecterRequete();
 });
+
+// Dans votre route FlightPHP
+Flight::route('GET /requete/cloturer/@id', function($id) {
+	$controller = new RequetClientControler();
+	$controller->cloturerRequete($id,"fermé");
+});
+
+Flight::route('GET /requete/resolue/@id', function($id) {
+	$controller = new RequetClientControler();
+	$controller->cloturerRequete($id,"résolu");
+});
+
+Flight::route('GET /requeteClient/supprimer/@id', function($id) {
+	$controller = new RequetClientControler();
+    $controller->supprimerRequete($id);
+});

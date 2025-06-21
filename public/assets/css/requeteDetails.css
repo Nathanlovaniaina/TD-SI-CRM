@@ -168,3 +168,32 @@
         .back-link:hover {
             text-decoration: underline;
         }
+
+        .notification {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+        }
+
+        .notification.success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+
+        .notification.error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }

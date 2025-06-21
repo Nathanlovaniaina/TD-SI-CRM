@@ -6,36 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détails Requête #<?= htmlspecialchars($requete['id_requete']) ?> | CRM</title>
     <link rel="stylesheet" href="<?= $base_url ?>/assets/css/requeteDetails.css">
-    <style>
-        .notification {
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-            animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
-        }
 
-        .notification.success {
-            background-color: #dff0d8;
-            color: #3c763d;
-            border: 1px solid #d6e9c6;
-        }
-
-        .notification.error {
-            background-color: #f2dede;
-            color: #a94442;
-            border: 1px solid #ebccd1;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-    </style>
 </head>
 <body>
 <header>
@@ -171,10 +142,15 @@
                     </button>
                     
                     <?php if (isset($affectationActive)): ?>
-                    <a href="<?= $base_url ?>/requeteClient/cloturer/<?= $requete['id_requete'] ?>" 
+                    <a href="<?= $base_url ?>/requete/cloturer/<?= $requete['id_requete'] ?>" 
                        class="btn-secondary" 
                        onclick="return confirm('Voulez-vous vraiment clôturer ce ticket ?')">
                         Clôturer le ticket
+                    </a>
+                    <a href="<?= $base_url ?>/requete/resolue/<?= $requete['id_requete'] ?>" 
+                       class="btn-secondary" 
+                       onclick="return confirm('Voulez-vous vraiment resoudre ce ticket ?')">
+                        Resoudre le ticket
                     </a>
                     <?php endif; ?>
                 </div>

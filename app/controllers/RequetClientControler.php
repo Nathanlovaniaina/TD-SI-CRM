@@ -284,6 +284,9 @@ public static function affecterRequete() {
             'success' => true,
             'message' => 'Affectation enregistrée avec succès'
         ]);
+
+        
+        Flight::redirect("/requeteClient/details/{$data->id_requete}");
         
     } catch (PDOException $e) {
         $db->rollBack();
@@ -291,6 +294,171 @@ public static function affecterRequete() {
             'success' => false,
             'message' => 'Erreur lors de l\'affectation: ' . $e->getMessage()
         ], 500);
+    }
+}
+
+public static function cloturerRequete(int $id_requete, string $statut = 'résolu'): void {
+    $db = Flight::db();
+    
+    // Validation des paramètres avec conversion explicite
+    $id_requete = (int)$id_requete;
+    $statut = (string)mb_strtolower(trim($statut));
+
+    if ($id_requete <= 0) {
+        Flight::flash('error', 'ID de requête invalide');
+        Flight::redirect("/requeteClient");
+        return;
+    }
+
+    $statutsValides = ['résolu', 'fermé'];
+    if (!in_array($statut, $statutsValides)) {
+        Flight::flash('error', 'Statut invalide. Choisissez: ' . implode(' ou ', $statutsValides));
+        Flight::redirect("/requeteClient/details/{$id_requete}");
+        return;
+    }
+
+    try {
+        $db->beginTransaction();
+
+        // 1. Vérification requête (version optimisée pour str_replace)
+        $sql = str_replace(
+            [':id_requete'], 
+            [(string)$id_requete], 
+            "SELECT rc.id_etat, er.libelle 
+             FROM RequeteClient rc
+             JOIN Etat_requete er ON rc.id_etat = er.id_etat
+             WHERE rc.id_requete = :id_requete
+             FOR UPDATE"
+        );
+        $requete = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
+
+        if (empty($requete)) {
+            throw new RuntimeException("Requête introuvable (ID: {$id_requete})");
+        }
+
+        // 2. Vérification statut actuel
+        if (in_array($requete['libelle'], $statutsValides)) {
+            throw new LogicException("Statut actuel: {$requete['libelle']}. Déjà clôturée.");
+        }
+
+        // 3. Mise à jour avec str_replace sécurisé
+        $updateSql = str_replace(
+            [':statut', ':id_requete'],
+            [$db->quote($statut), (string)$id_requete],
+            "UPDATE RequeteClient 
+             SET id_etat = (SELECT id_etat FROM Etat_requete WHERE libelle = :statut LIMIT 1)
+             WHERE id_requete = :id_requete"
+        );
+        $db->exec($updateSql);
+
+        // 4. Invalidation des affectations
+        $invalidateSql = str_replace(
+            ':id_requete',
+            (string)$id_requete,
+            "UPDATE AffectationTicket
+             SET is_valide = FALSE
+             WHERE id_requete = :id_requete
+             AND is_valide = TRUE"
+        );
+        $db->exec($invalidateSql);
+
+        // 5. Message système
+        $message = str_replace(
+            ['{statut}', '{id}'],
+            [$statut, $id_requete],
+            "[SYSTÈME] Ticket {statut} (ID: {id})"
+        );
+
+        // $insertSql = str_replace(
+        //     [':message', ':id_requete'],
+        //     [$db->quote($message), (string)$id_requete],
+        //     "INSERT INTO ChatTicket 
+        //      (id_ticket, id_client, contenu, date_envoi)
+        //      SELECT 
+        //          t.id_ticket,
+        //          rc.id_client,
+        //          :message,
+        //          NOW()
+        //      FROM RequeteClient rc
+        //      JOIN Ticket t ON rc.id_requete = t.id_ticket
+        //      WHERE rc.id_requete = :id_requete"
+        // );
+        // $db->exec($insertSql);
+
+        $db->commit();
+        Flight::redirect("/requeteClient/details/{$id_requete}");
+
+    } catch (PDOException $e) {
+        $db->rollBack();
+        Flight::flash('error', "Erreur technique: " . $e->getMessage());
+        Flight::log($e);
+    } catch (Exception $e) {
+        $db->rollBack();
+        Flight::flash('error', $e->getMessage());
+    }
+
+    Flight::redirect("/requeteClient/details/{$id_requete}");
+}
+
+public static function supprimerRequete(int $id_requete): void {
+    $db = Flight::db();
+
+    // Validation de l'ID avec conversion explicite en string pour le débogage
+    $id_requete_str = (string)$id_requete;
+    if ($id_requete <= 0) {
+        Flight::flash('error', 'ID de requête invalide');
+        Flight::redirect("/requeteClient");
+        return;
+    }
+
+    try {
+        $db->beginTransaction();
+
+        // 1. Vérification existence de la requête (version sécurisée pour str_replace)
+        $sql = "SELECT id_requete FROM RequeteClient WHERE id_requete = " . $db->quote($id_requete_str) . " FOR UPDATE";
+        $result = $db->query($sql);
+        
+        if (!$result->fetch()) {
+            throw new Exception("Requête introuvable (ID: {$id_requete_str})");
+        }
+
+        // 2. Suppression des messages du chat (version convertissant explicitement les types)
+        $sql = "DELETE FROM ChatTicket WHERE id_ticket = " . $db->quote($id_requete_str);
+        $db->exec($sql);
+
+        // 3. Suppression des évaluations
+        $sql = "DELETE FROM EvaluationTicket WHERE id_ticket = " . $db->quote($id_requete_str);
+        $db->exec($sql);
+
+        // 4. Suppression des affectations
+        $sql = "DELETE FROM AffectationTicket WHERE id_requete = " . $db->quote($id_requete_str);
+        $db->exec($sql);
+
+        // 5. Suppression du ticket
+        $sql = "DELETE FROM Ticket WHERE id_ticket = " . $db->quote($id_requete_str);
+        $db->exec($sql);
+
+        // 6. Suppression finale de la requête
+        $sql = "DELETE FROM RequeteClient WHERE id_requete = " . $db->quote($id_requete_str);
+        $db->exec($sql);
+
+        $db->commit();
+
+        Flight::redirect("/requeteClient");
+
+    } catch (PDOException $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+        Flight::flash('error', "Erreur technique lors de la suppression : " . $e->getMessage());
+        Flight::log($e);
+        Flight::redirect("/requeteClient/details/{$id_requete_str}");
+    } catch (Exception $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+        Flight::flash('error', $e->getMessage());
+        Flight::redirect("/requeteClient/details/{$id_requete_str}");
     }
 }
 }
