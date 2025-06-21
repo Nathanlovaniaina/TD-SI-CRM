@@ -95,7 +95,7 @@ class GenericDAO
 
     public function getByCriteria($criteria)
     {
-        $query = "SELECT * FROM {$this->table} WHERE $criteria";
+        $query = "SELECT * FROM {$this->table} WHERE 1=1 AND $criteria";
         $stmt  = $this->conn->prepare($query);
         $stmt->execute();
 

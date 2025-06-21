@@ -147,3 +147,8 @@ Flight::route('POST /commande/delete', function() {
     $controller = new CommandeController();
     $controller->delete_commande();
 });
+
+Flight::route('POST /commande/delete', function() {
+    $controller = new CommandeController();
+    $controller->delete_commande();
+});

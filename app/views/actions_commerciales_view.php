@@ -230,7 +230,7 @@
                         <td class="rate-cell"><?= number_format($action['CommandeRate'], 2) ?></td>
                         <td class="rate-cell"><?= number_format($action['PrixRate'], 2) ?></td>
                         <td class="action-buttons">
-                            <a href="/action-commerciale/modifier/<?= $action['ActionCommercialeID'] ?>" class="edit-btn">✏️</a>
+                            <!-- <a href="/action-commerciale/modifier/<?= $action['ActionCommercialeID'] ?>" class="edit-btn">✏️</a> -->
                             <form action="/actioncommercial/delete" method="POST" style="display:inline;">
                                 <input type="hidden" name="ActionCommercialeID" value="<?= $action['ActionCommercialeID'] ?>">
                                 <button type="submit" class="action-link" onclick="return confirm('Confirmer la suppression ?')">🗑️</button>
