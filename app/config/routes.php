@@ -163,7 +163,7 @@ Flight::route('GET /requeteClient/details/@id', function($id) {
     $controller->getRequeteDetails($id);
 });
 
-Flight::route('POST /requeteClient/assigner/@id', function($id) {
+Flight::route('POST /requeteClient/affecter', function() {
     $controller = new RequetClientControler();
-    $controller->assignerAgent($id);
+    $controller->affecterRequete();
 });

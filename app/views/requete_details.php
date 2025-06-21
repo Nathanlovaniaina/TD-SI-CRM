@@ -7,6 +7,34 @@
     <title>Détails Requête #<?= htmlspecialchars($requete['id_requete']) ?> | CRM</title>
     <link rel="stylesheet" href="<?= $base_url ?>/assets/css/requeteDetails.css">
     <style>
+        .notification {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+        }
+
+        .notification.success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+
+        .notification.error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -30,6 +58,19 @@
     <div class="main-content">
         <a href="<?= $base_url ?>/requeteClient" class="back-link">← Retour à la liste</a>
         
+        <!-- Affichage des messages flash -->
+        <?php if (Flight::has('success')): ?>
+        <div class="notification success">
+            <?= Flight::flash('success') ?>
+        </div>
+        <?php endif; ?>
+
+        <?php if (Flight::has('error')): ?>
+        <div class="notification error">
+            <?= Flight::flash('error') ?>
+        </div>
+        <?php endif; ?>
+
         <div class="section">
             <h1>Requête #<?= htmlspecialchars($requete['id_requete']) ?></h1>
             
@@ -64,39 +105,88 @@
         </div>
 
         <div class="section">
-            <h2>Assignation</h2>
+            <h2>Gestion de l'affectation</h2>
             
-            <h3>Agent actuel</h3>
-            <?php if (!empty($agentsAssignes) && $agentsAssignes[0]['is_valide']): ?>
-                <p><?= htmlspecialchars($agentsAssignes[0]['agent_nom']) ?> 
-                (depuis le <?= date('d/m/Y', strtotime($agentsAssignes[0]['date_affectation'])) ?>)</p>
-            <?php else: ?>
-                <p>Aucun agent actuellement assigné</p>
-            <?php endif; ?>
-            
-            <h3>Réassigner</h3>
-            <form id="assignForm" class="assign-form">
+            <form id="assignForm" method="POST" action="<?= $base_url ?>/requeteClient/affecter" class="assign-form">
+                <input type="hidden" name="id_requete" value="<?= $requete['id_requete'] ?>">
+                <?php if (isset($affectationActive['id_ticket'])): ?>
+                <input type="hidden" name="id_ticket" value="<?= $affectationActive['id_ticket'] ?>">
+                <?php endif; ?>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ticketCategory">Catégorie :</label>
+                        <select id="ticketCategory" name="id_categorie" required>
+                            <option value="">Sélectionnez une catégorie</option>
+                            <?php foreach ($categories as $categorie): ?>
+                            <option value="<?= $categorie['id_categorie'] ?>" >
+                                <?= htmlspecialchars($categorie['Nom']) ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ticketPriority">Priorité :</label>
+                        <select id="ticketPriority" name="priorite" required>
+                            <option value="faible" <?= isset($affectationActive) && $affectationActive['priorite'] == 'faible' ? 'selected' : '' ?>>Faible</option>
+                            <option value="moyenne" <?= isset($affectationActive) && $affectationActive['priorite'] == 'moyenne' ? 'selected' : '' ?>>Moyenne</option>
+                            <option value="haute" <?= isset($affectationActive) && $affectationActive['priorite'] == 'haute' ? 'selected' : '' ?>>Haute</option>
+                            <option value="urgence" <?= isset($affectationActive) && $affectationActive['priorite'] == 'urgence' ? 'selected' : '' ?>>Urgence</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ticketPrice">Prix prestation :</label>
+                        <input type="number" id="ticketPrice" name="prixPrestation" step="0.01" min="0" 
+                            value="<?= isset($affectationActive) ? htmlspecialchars($affectationActive['prixPrestation']) : '' ?>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ticketDuration">Durée (minutes) :</label>
+                        <input type="number" id="ticketDuration" name="duree" min="1" 
+                            value="<?= isset($affectationActive) ? htmlspecialchars($affectationActive['duree']) : '30' ?>" required>
+                    </div>
+                </div>
+                
                 <div class="form-group">
-                    <label for="agentSelect">Nouvel agent :</label>
+                    <label for="agentSelect">Agent :</label>
                     <select id="agentSelect" name="id_agent" required>
                         <option value="">Sélectionnez un agent</option>
                         <?php foreach ($agentsDisponibles as $agent): ?>
-                        <option value="<?= $agent['id_agent'] ?>">
+                        <option value="<?= $agent['id_agent'] ?>"
+                            <?= isset($affectationActive) && $affectationActive['id_agent'] == $agent['id_agent'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($agent['Nom']) ?> 
-                            <?= htmlspecialchars($agent['Email']) ?>
                             (<?= $agent['nb_requetes_actives'] ?> requêtes)
                         </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <button type="submit">Assigner</button>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <?= isset($affectationActive) ? 'Mettre à jour l\'affectation' : 'Créer l\'affectation' ?>
+                    </button>
+                    
+                    <?php if (isset($affectationActive)): ?>
+                    <a href="<?= $base_url ?>/requeteClient/cloturer/<?= $requete['id_requete'] ?>" 
+                       class="btn-secondary" 
+                       onclick="return confirm('Voulez-vous vraiment clôturer ce ticket ?')">
+                        Clôturer le ticket
+                    </a>
+                    <?php endif; ?>
+                </div>
             </form>
             
-            <h3>Historique des assignations</h3>
+            <h3 style="margin-top: 30px;">Historique des assignations</h3>
             <table>
                 <thead>
                     <tr>
                         <th>Agent</th>
+                        <th>Catégorie</th>
+                        <th>Priorité</th>
                         <th>Date</th>
                         <th>Statut</th>
                     </tr>
@@ -105,6 +195,8 @@
                     <?php foreach ($agentsAssignes as $agent): ?>
                     <tr>
                         <td><?= htmlspecialchars($agent['agent_nom']) ?></td>
+                        <td><?= htmlspecialchars($agent['categorie_nom'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars($agent['priorite'] ?? 'N/A') ?></td>
                         <td><?= date('d/m/Y H:i', strtotime($agent['date_affectation'])) ?></td>
                         <td><?= $agent['is_valide'] ? 'Actif' : 'Inactif' ?></td>
                     </tr>
@@ -134,11 +226,12 @@
                 <?php endif; ?>
             </div>
             
-            <form id="messageForm" style="margin-top: 1rem;">
+            <form id="messageForm" method="POST" action="<?= $base_url ?>/requeteClient/envoyer-message" style="margin-top: 1rem;">
+                <input type="hidden" name="id_requete" value="<?= $requete['id_requete'] ?>">
                 <div class="form-group">
-                    <textarea name="message" rows="3" style="width: 100%;" required></textarea>
+                    <textarea name="message" rows="3" style="width: 100%;" placeholder="Écrivez votre message..." required></textarea>
                 </div>
-                <button type="submit">Envoyer</button>
+                <button type="submit" class="btn-primary">Envoyer</button>
             </form>
         </div>
 
@@ -151,6 +244,7 @@
                     <thead>
                         <tr>
                             <th>Date</th>
+                            <th>Évaluateur</th>
                             <th>Note</th>
                             <th>Commentaire</th>
                         </tr>
@@ -159,8 +253,12 @@
                         <?php foreach ($evaluations as $eval): ?>
                         <tr>
                             <td><?= date('d/m/Y H:i', strtotime($eval['date_evaluation'])) ?></td>
+                            <td><?= htmlspecialchars($eval['evaluateur_nom']) ?> </td>
                             <td>
-                                <?= str_repeat('★', $eval['note']) ?><?= str_repeat('☆', 5 - $eval['note']) ?>
+                                <span style="color: gold; font-size: 1.2em;">
+                                    <?= str_repeat('★', $eval['note']) ?><?= str_repeat('☆', 5 - $eval['note']) ?>
+                                </span>
+                                (<?= $eval['note'] ?>/5)
                             </td>
                             <td><?= htmlspecialchars($eval['commentaire']) ?></td>
                         </tr>
@@ -173,37 +271,20 @@
 </div>
 
 <script>
-// Gestion de l'assignation d'agent
-document.getElementById('assignForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    formData.append('id_requete', <?= $requete['id_requete'] ?>);
-    
-    fetch('<?= $base_url ?>/requeteClient/assigner/<?= $requete['id_requete'] ?>', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Agent assigné avec succès');
-            location.reload();
-        } else {
-            alert('Erreur: ' + (data.message || 'Erreur inconnue'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Une erreur est survenue');
+// Simple confirmation pour la clôture du ticket
+document.querySelectorAll('[onclick="return confirm(\'Voulez-vous vraiment clôturer ce ticket ?\')"]')
+    .forEach(link => {
+        link.onclick = function() {
+            return confirm('Voulez-vous vraiment clôturer ce ticket ?');
+        };
     });
-});
 
-// Gestion de l'envoi de message (à implémenter selon votre backend)
-document.getElementById('messageForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    alert('Fonctionnalité d\'envoi de message à implémenter');
-    // Implémentez l'envoi AJAX vers votre endpoint d'ajout de message
+// Faire défiler le chat vers le bas
+window.addEventListener('load', () => {
+    const chatContainer = document.querySelector('.chat-container');
+    if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 });
 </script>
 </body>
