@@ -153,16 +153,16 @@ ADD COLUMN PrixRate DECIMAL(5,2) NULL;
 
 
 -- ======================
--- TABLES DE BASE
+-- TABLE Etat_requete
 -- ======================
-
--- Table Etat_requete
 CREATE TABLE IF NOT EXISTS Etat_requete (
     id_etat INT AUTO_INCREMENT PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL
 );
 
--- Table RequeteClient
+-- ======================
+-- TABLE RequeteClient
+-- ======================
 CREATE TABLE IF NOT EXISTS RequeteClient (
     id_requete INT AUTO_INCREMENT PRIMARY KEY,
     id_client INT NOT NULL,
@@ -175,13 +175,17 @@ CREATE TABLE IF NOT EXISTS RequeteClient (
     FOREIGN KEY (id_etat) REFERENCES Etat_requete(id_etat)
 );
 
--- Table CategorieTicket
+-- ======================
+-- TABLE CategorieTicket
+-- ======================
 CREATE TABLE IF NOT EXISTS CategorieTicket (
     id_categorie INT AUTO_INCREMENT PRIMARY KEY,
     Nom VARCHAR(100) NOT NULL
 );
 
--- Table Agent
+-- ======================
+-- TABLE Agent
+-- ======================
 CREATE TABLE IF NOT EXISTS Agent (
     id_agent INT AUTO_INCREMENT PRIMARY KEY,
     id_employe INT NOT NULL,
@@ -189,31 +193,36 @@ CREATE TABLE IF NOT EXISTS Agent (
     FOREIGN KEY (id_employe) REFERENCES Employe(EmployeID)
 );
 
--- Table Ticket
+-- ======================
+-- TABLE Ticket
+-- ======================
 CREATE TABLE IF NOT EXISTS Ticket (
     id_ticket INT AUTO_INCREMENT PRIMARY KEY,
     id_categorie INT NOT NULL,
-    priorite ENUM('basse', 'normale', 'haute') NOT NULL,
+    priorite VARCHAR(50) NOT NULL,
     prixPrestation DECIMAL(10, 2) NOT NULL,
-    duree INT NOT NULL COMMENT 'Durée estimée en heures',
-    id_requete INT NOT NULL,
-    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
-    statut ENUM('ouvert', 'assigné', 'en_cours', 'résolu', 'fermé') DEFAULT 'ouvert',
-    FOREIGN KEY (id_categorie) REFERENCES CategorieTicket(id_categorie),
-    FOREIGN KEY (id_requete) REFERENCES RequeteClient(id_requete)
+    duree INT NOT NULL,
+    FOREIGN KEY (id_categorie) REFERENCES CategorieTicket(id_categorie)
 );
 
--- Table AffectationTicket
+-- ======================
+-- TABLE AffectationTicket
+-- ======================
 CREATE TABLE IF NOT EXISTS AffectationTicket (
     id_affectation INT AUTO_INCREMENT PRIMARY KEY,
     id_ticket INT NOT NULL,
+    id_requete INT NOT NULL,
     id_agent INT NOT NULL,
+    is_valide BOOLEAN DEFAULT FALSE,
     date_affectation DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_ticket) REFERENCES Ticket(id_ticket),
+    FOREIGN KEY (id_requete) REFERENCES RequeteClient(id_requete),
     FOREIGN KEY (id_agent) REFERENCES Agent(id_agent)
 );
 
--- Table ChatTicket
+-- ======================
+-- TABLE ChatTicket
+-- ======================
 CREATE TABLE IF NOT EXISTS ChatTicket (
     id_message INT AUTO_INCREMENT PRIMARY KEY,
     id_ticket INT NOT NULL,
@@ -228,31 +237,31 @@ CREATE TABLE IF NOT EXISTS ChatTicket (
     FOREIGN KEY (id_affectation) REFERENCES AffectationTicket(id_affectation)
 );
 
--- Table EvaluationTicket
+-- ======================
+-- TABLE EvaluationTicket
+-- ======================
 CREATE TABLE IF NOT EXISTS EvaluationTicket (
     id_evaluation INT AUTO_INCREMENT PRIMARY KEY,
     id_ticket INT NOT NULL,
-    note INT CHECK (note BETWEEN 1 AND 5),
+    note INT NOT NULL,
     commentaire TEXT,
     date_evaluation DATETIME DEFAULT CURRENT_TIMESTAMP,
     id_affectation INT NOT NULL,
     FOREIGN KEY (id_ticket) REFERENCES Ticket(id_ticket),
-    FOREIGN KEY (id_affectation) REFERENCES AffectationTicket(id_affectation)
+    FOREIGN KEY (id_affectation) REFERENCES AffectationTicket(id_affectation),
+    CONSTRAINT chk_note CHECK (note BETWEEN 1 AND 5)
 );
 
 -- ======================
--- DONNÉES DE BASE
+-- INSERTION DES ÉTATS DE REQUÊTE
 -- ======================
-
--- Insertion des états de requête
 INSERT INTO Etat_requete (libelle) VALUES 
-('Nouvelle'),
-('En cours de validation'),
-('Validee'),
-('Rejetee'),
-('Convertie en ticket');
+('ouvert'),
+('assigné'),
+('en_cours'),
+('résolu'),
+('fermé');
 
--- Insertion des catégories de tickets
 INSERT INTO CategorieTicket (Nom) VALUES 
 ('Technique'),
 ('Facturation'),
@@ -263,12 +272,11 @@ INSERT INTO CategorieTicket (Nom) VALUES
 -- ======================
 -- INDEX POUR LES PERFORMANCES
 -- ======================
-
 CREATE INDEX idx_requete_client ON RequeteClient(id_client);
 CREATE INDEX idx_requete_etat ON RequeteClient(id_etat);
 CREATE INDEX idx_ticket_categorie ON Ticket(id_categorie);
-CREATE INDEX idx_ticket_requete ON Ticket(id_requete);
 CREATE INDEX idx_affectation_ticket ON AffectationTicket(id_ticket);
+CREATE INDEX idx_affectation_requete ON AffectationTicket(id_requete);
 CREATE INDEX idx_affectation_agent ON AffectationTicket(id_agent);
 CREATE INDEX idx_chat_ticket ON ChatTicket(id_ticket);
 CREATE INDEX idx_evaluation_ticket ON EvaluationTicket(id_ticket);
@@ -276,29 +284,29 @@ CREATE INDEX idx_evaluation_ticket ON EvaluationTicket(id_ticket);
 -- ======================
 -- TRIGGERS POUR LE WORKFLOW
 -- ======================
-
 DELIMITER //
 
--- Trigger après insertion d'un ticket
-CREATE TRIGGER after_ticket_insert
-AFTER INSERT ON Ticket
+-- Mise à jour de l'état quand une affectation est validée
+CREATE TRIGGER after_affectation_validee
+AFTER UPDATE ON AffectationTicket
 FOR EACH ROW
 BEGIN
-    -- Mettre à jour l'état de la requête associée
-    UPDATE RequeteClient 
-    SET id_etat = (SELECT id_etat FROM Etat_requete WHERE libelle = 'Convertie en ticket')
-    WHERE id_requete = NEW.id_requete;
-END//
-
--- Trigger après évaluation
-CREATE TRIGGER after_evaluation_insert
-AFTER INSERT ON EvaluationTicket
-FOR EACH ROW
-BEGIN
-    -- Mettre à jour le statut du ticket
-    UPDATE Ticket
-    SET statut = 'fermé'
-    WHERE id_ticket = NEW.id_ticket;
+    IF NEW.is_valide = TRUE AND OLD.is_valide = FALSE THEN
+        -- Mettre à jour l'état de la requête
+        UPDATE RequeteClient 
+        SET id_etat = (SELECT id_etat FROM Etat_requete WHERE libelle = 'en_cours')
+        WHERE id_requete = NEW.id_requete;
+        
+        -- Ajouter un message dans le chat
+        INSERT INTO ChatTicket (id_ticket, id_agent, id_client, contenu, id_affectation)
+        VALUES (
+            NEW.id_ticket,
+            NEW.id_agent,
+            (SELECT id_client FROM RequeteClient WHERE id_requete = NEW.id_requete),
+            'Votre demande a été prise en charge par un agent',
+            NEW.id_affectation
+        );
+    END IF;
 END//
 
 DELIMITER ;
@@ -307,27 +315,49 @@ DELIMITER ;
 -- VUES UTILES
 -- ======================
 
--- Vue des requêtes non traitées
-CREATE VIEW Vue_RequetesNonTraitees AS
-SELECT r.id_requete, r.Sujet, r.Date_creation, 
-       c.Nom, c.Prenom, e.libelle AS etat
+-- Vue des requêtes avec état
+CREATE VIEW Vue_RequetesAvecEtat AS
+SELECT 
+    r.id_requete, 
+    r.Sujet, 
+    r.Date_creation, 
+    e.libelle AS etat,
+    CONCAT(c.Nom, ' ', c.Prenom) AS client
 FROM RequeteClient r
-JOIN Client c ON r.id_client = c.ClientID
 JOIN Etat_requete e ON r.id_etat = e.id_etat
-WHERE e.libelle IN ('Nouvelle', 'En cours de validation')
-ORDER BY r.Date_creation;
+JOIN Client c ON r.id_client = c.ClientID;
 
--- Vue des tickets ouverts avec affectation
-CREATE VIEW Vue_TicketsOuverts AS
-SELECT t.id_ticket, t.priorite, c.Nom AS categorie,
-       a.id_agent, e.Nom AS nom_agent, e.Prenom AS prenom_agent,
-       rc.Sujet, cl.Nom AS nom_client, cl.Prenom AS prenom_client
+-- Vue des tickets avec affectations
+CREATE VIEW Vue_TicketsAffectes AS
+SELECT 
+    t.id_ticket,
+    c.Nom AS categorie,
+    t.priorite,
+    a.id_agent,
+    at.is_valide,
+    at.date_affectation,
+    e.libelle AS etat_requete
 FROM Ticket t
 JOIN CategorieTicket c ON t.id_categorie = c.id_categorie
-JOIN RequeteClient rc ON t.id_requete = rc.id_requete
-JOIN Client cl ON rc.id_client = cl.ClientID
-LEFT JOIN AffectationTicket at ON t.id_ticket = at.id_ticket
-LEFT JOIN Agent a ON at.id_agent = a.id_agent
-LEFT JOIN Employe e ON a.id_employe = e.EmployeID
-WHERE t.statut != 'fermé'
-ORDER BY t.priorite DESC, t.date_creation;
+JOIN AffectationTicket at ON t.id_ticket = at.id_ticket
+JOIN RequeteClient r ON at.id_requete = r.id_requete
+JOIN Etat_requete e ON r.id_etat = e.id_etat
+JOIN Agent a ON at.id_agent = a.id_agent;
+INSERT INTO RequeteClient (id_client, Sujet, Description, Date_creation, FichierJoint, id_etat) VALUES
+-- Requête 1 (ouverte)
+(1, 'Problème de connexion', 'Je ne parviens pas à me connecter à mon compte depuis hier matin.', '2023-10-15 09:23:45', NULL, 1),
+
+-- Requête 2 (assignée)
+(3, 'Facture erronée', 'Ma facture du 10/10/2023 présente un montant incorrect de 150€ au lieu de 120€.', '2023-10-16 14:12:33', 'facture_erreur.pdf', 2),
+
+-- Requête 3 (en cours)
+(2, 'Retard de livraison', 'Ma commande #45879 devait être livrée hier mais n\'est toujours pas arrivée.', '2023-10-17 10:45:21', NULL, 3),
+
+-- Requête 4 (résolue)
+(5, 'Demande de fonctionnalité', 'Serait-il possible d\'ajouter un export Excel des historiques de commandes ?', '2023-10-10 16:30:15', 'exemple_export.xlsx', 4),
+
+-- Requête 5 (fermée)
+(4, 'Réclamation produit défectueux', 'Le produit reçu (réf. #P7854) est endommagé. Pièce jointe jointe.', '2023-10-05 11:20:05', 'produit_defect.jpg', 5),
+
+-- Requête 6 (ouverte - urgence)
+(7, 'Urgent! Commande bloquée', 'Ma commande #48750 est bloquée à l\'étape de paiement depuis 1h.', '2023-10-18 08:05:37', 'capture_ecran_paiement.png', 1);

@@ -14,7 +14,7 @@ use flight\net\Router;
 use app\controllers\ClientController;
 use app\controllers\CommandeController;
 use app\controllers\ActionCommercialeController;
-
+use app\controllers\RequetClientControler;
 // use Flight;
 
 /** 
@@ -151,4 +151,19 @@ Flight::route('POST /commande/delete', function() {
 Flight::route('POST /commande/delete', function() {
     $controller = new CommandeController();
     $controller->delete_commande();
+});
+
+Flight::route('GET /requeteClient', function() {
+    $controller = new RequetClientControler();
+    $controller->getAllRequeteClients();
+});
+
+Flight::route('GET /requeteClient/details/@id', function($id) {
+    $controller = new RequetClientControler();
+    $controller->getRequeteDetails($id);
+});
+
+Flight::route('POST /requeteClient/assigner/@id', function($id) {
+    $controller = new RequetClientControler();
+    $controller->assignerAgent($id);
 });
