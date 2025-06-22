@@ -162,6 +162,7 @@
             <a href="simulation">Simulation</a>
             <a href="actioncommercial">Actions Commerciales</a>
             <a href="requeteClient">Requete Client</a>
+            <a href="/requeteClient/stats">Statistique de Services Client</a>
         </nav>
     </div>
 

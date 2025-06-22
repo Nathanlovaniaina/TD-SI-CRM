@@ -15,6 +15,7 @@ use app\controllers\ClientController;
 use app\controllers\CommandeController;
 use app\controllers\ActionCommercialeController;
 use app\controllers\RequetClientControler;
+use app\controllers\StatistiqueTicketController;
 // use Flight;
 
 /** 
@@ -182,4 +183,9 @@ Flight::route('GET /requete/resolue/@id', function($id) {
 Flight::route('GET /requeteClient/supprimer/@id', function($id) {
 	$controller = new RequetClientControler();
     $controller->supprimerRequete($id);
+});
+
+Flight::route('GET /requeteClient/stats', function() {
+	$controller = new StatistiqueTicketController();
+	$controller->showStatsDashboard();
 });
