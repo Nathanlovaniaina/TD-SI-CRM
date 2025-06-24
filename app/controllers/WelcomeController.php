@@ -107,14 +107,17 @@ class WelcomeController {
             ["href" => $base_url."actioncommercial", "label" => "Actions Commerciales"],
             ["href" => $base_url."requeteClient", "label" => "Requete Client"],
             ["href" => $base_url."/requeteClient_stats", "label" => "Statistique de Services Client"],
+            ["href" => $base_url."/logout", "label" => "Deconnexion"],
         ];
     } elseif ($role === 'agent') {
         $navItems = [
             ["href" => $base_url."requeteClient", "label" => "Requete Clients"],
+            ["href" => $base_url."/logout", "label" => "Deconnexion"],
         ];
     } elseif ($role === 'client') {
         $navItems = [
             ["href" => $base_url."requeteClient", "label" => "Mes requetes"],
+            ["href" => $base_url."/logout", "label" => "Deconnexion"],
         ];
     }
 

@@ -51,13 +51,13 @@ $router->post('/login',function(){
 		return;
 	}
 	if($WelcomeController->loginClient($identifiant, $mdp)==true){
-		Flight::redirect('/dashboard');
+		Flight::redirect('/');
 		return;
 	}elseif ($WelcomeController->loginAgent($identifiant, $mdp)==true) {
-		Flight::redirect('/dashboard');
+		Flight::redirect('/requeteClient_stats');
 		return;
 	}else{
-		Flight::redirect('/');
+		Flight::redirect('/requeteClient_stats');
 	}
 });
 
