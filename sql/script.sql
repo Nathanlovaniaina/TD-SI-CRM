@@ -368,3 +368,5 @@ ADD COLUMN mot_de_passe VARCHAR(20);
 
 ALTER TABLE Employe
 ADD COLUMN mot_de_passe VARCHAR(20);
+
+ALTER TABLE ChatTicket MODIFY id_client INT;

@@ -16,6 +16,7 @@ use app\controllers\CommandeController;
 use app\controllers\ActionCommercialeController;
 use app\controllers\RequetClientControler;
 use app\controllers\StatistiqueTicketController;
+use app\controllers\ChatController;
 use app\controllers\AuthController;
 // use Flight;
 
@@ -199,3 +200,19 @@ Flight::route('GET /requeteClient_stats', function() {
 	$controller = new StatistiqueTicketController();
 	$controller->showStatsDashboard();
 });
+
+$router->get('/requeteClient/chat/client',function(){
+	$chatcontroller =new ChatController();
+	$chatcontroller->clientChat();
+});
+$router->get('/requeteClient/chat/agent',function(){
+	$chatcontroller =new ChatController();
+	$chatcontroller->agentChat();
+});
+
+Flight::route('GET /api/chat/@id_affectation', function($id_affectation){
+	$chatcontroller = new ChatController();
+	$chatcontroller->getMessages($id_affectation);
+});
+
+Flight::route('POST /api/chat/send', [new ChatController(), 'sendMessage']);

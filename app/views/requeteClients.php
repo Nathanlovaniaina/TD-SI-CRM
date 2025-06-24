@@ -1,4 +1,6 @@
-<?php $base_url = Flight::get('flight.base_url'); ?>
+<?php $base_url = Flight::get('flight.base_url'); 
+$role = $_SESSION['role'];
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -97,6 +99,7 @@
                             <a href="<?= $base_url ?>/requeteClient/details/<?= $requete['id_requete'] ?>" class="action-btn view-btn">Voir</a>
                             <!-- <a href="<?= $base_url ?>/requeteClient/modifier/<?= $requete['id_requete'] ?>" class="action-btn edit-btn">✏️ Modifier</a> -->
                             <a href="<?= $base_url ?>/requeteClient/supprimer/<?= $requete['id_requete'] ?>" class="action-btn delete-btn" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
+                            <a href="<?= $base_url ?>/requeteClient/chat/<?= $role ?>" class="action-btn delete-btn" >Voir message</a>
                         </div>
                     </td>
                 </tr>
