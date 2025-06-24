@@ -221,17 +221,9 @@
 </header>
 
 <div class="sidebar">
-    <div class="sidebar">
-        <nav class="sidebar-nav">
-            <a href="dashboard" >Accueil</a>
-            <a href="clients" >Clients</a>
-            <a href="produits" class="active">Produits</a>
-            <a href="commandes">Commandes</a>
-            <a href="stat">Statistique</a>
-            <a href="simulation">Simulation</a>
-            <a href="actioncommercial">Actions Commerciales</a>
-        </nav>
-    </div>
+    <nav class="sidebar-nav">
+        <?= $navbar ?>
+    </nav>
 </div>
 
 <div class="main-content">

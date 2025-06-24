@@ -212,7 +212,9 @@ class DashboardController {
 
 
     public function get_view(){
+        $WelcomeController = new WelcomeController();
         return Flight::render('dashboard', [
+            'navbar' => $WelcomeController->get_navbar(),
             'commandes'          => $this->dernier_commande(),
             'nb_clients'         => $this->nombre_clients(),
             'nb_commandes'       => $this->nombre_commandes(),

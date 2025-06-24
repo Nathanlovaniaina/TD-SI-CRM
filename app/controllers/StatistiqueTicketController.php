@@ -86,7 +86,10 @@ class StatistiqueTicketController {
                 'satisfactionScores' => array_column($satisfaction, 'NoteMoyenne')
             ];
 
+            $WelcomeController = new WelcomeController();
+
             return Flight::render('requeteClientStat', [
+                'navbar' => $WelcomeController->get_navbar(),
                 'statsByCategory' => $statsByCategory,
                 'repartitionByPriority' => $repartitionByPriority,
                 'resolutionTime' => $resolutionTime,
@@ -209,8 +212,10 @@ class StatistiqueTicketController {
                 'priorities' => ['haute', 'moyenne', 'basse']
             ];
 
+            $WelcomeController = new WelcomeController();
 
             return Flight::render('requeteClientStat', [
+                'navbar' => $WelcomeController->get_navbar(),
                 'statsByCategory' => $statsByCategory,
                 'repartitionByPriority' => $repartitionByPriority,
                 'resolutionRate' => $resolutionRate,

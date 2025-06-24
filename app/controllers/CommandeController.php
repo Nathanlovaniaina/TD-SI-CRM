@@ -13,13 +13,13 @@ class CommandeController {
 
     public function commandes() {
         $db = Flight::db();
-
+        $WelcomeController = new WelcomeController();
         try {
             $stmt = $db->prepare("SELECT * FROM Commande");
             $stmt->execute();
             $commandes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            Flight::render('commandes_view.php', ['commandes' => $commandes]);
+            Flight::render('commandes_view.php', ['navbar' => $WelcomeController->get_navbar(),'commandes' => $commandes]);
 
         } catch (PDOException $e) {
             error_log('Erreur commandes : ' . $e->getMessage());

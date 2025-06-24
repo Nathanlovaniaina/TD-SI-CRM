@@ -185,7 +185,7 @@ Flight::route('GET /requeteClient/supprimer/@id', function($id) {
     $controller->supprimerRequete($id);
 });
 
-Flight::route('GET /requeteClient/stats', function() {
+Flight::route('GET /requeteClient_stats', function() {
 	$controller = new StatistiqueTicketController();
 	$controller->showStatsDashboard();
 });

@@ -13,13 +13,13 @@ class ClientController {
 
     public function clients() {
         $db = Flight::db();
-
+        $WelcomeController = new WelcomeController();
         try {
             $stmt = $db->prepare("SELECT * FROM Client");
             $stmt->execute();
             $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            Flight::render('clients_view.php', ['clients' => $clients]);
+            Flight::render('clients_view.php', ['navbar' => $WelcomeController->get_navbar(),'clients' => $clients]);
 
         } catch (PDOException $e) {
             error_log('Erreur clients : ' . $e->getMessage());
@@ -29,7 +29,7 @@ class ClientController {
 
     public function client_detail($id) {
         $db = Flight::db();
-
+        $WelcomeController = new WelcomeController();
         try {
             $stmt = $db->prepare("
                 SELECT 'Client' AS source, TypeReaction, DateReaction, Contenu
@@ -44,6 +44,7 @@ class ClientController {
             $reactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             Flight::render('client_detail.php', [
+                'navbar' => $WelcomeController->get_navbar(),
                 'reactions' => $reactions,
                 'client_id' => $id
             ]);

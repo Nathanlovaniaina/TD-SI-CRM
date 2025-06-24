@@ -246,14 +246,17 @@ class StatController {
 
     public function get_view(){
         $ActionDAO = new ActionDAO();
-        return Flight::render("stat");
+        $WelcomeController = new WelcomeController();
+        return Flight::render("stat",['navbar' => $WelcomeController->get_navbar()]);
     }
 
     public function get_view_post(){
         $ActionDAO = new ActionDAO();
         $Post = Flight::request()->data;
+        $WelcomeController = new WelcomeController();
         $tendance_categorie = $this->getStatsParCategorie($Post['date_debut'],$Post['date_fin']);
         return Flight::render("stat",[
+            'navbar' => $WelcomeController->get_navbar(),
             "stat" => $this->simulationAction($Post['idAction'],$Post['date_debut'],$Post['date_fin']),
             "action"=> $ActionDAO->getById($Post['idAction']),
             "tendance"=>$tendance_categorie

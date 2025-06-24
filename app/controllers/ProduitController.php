@@ -8,10 +8,11 @@ use PDO;
 class ProduitController {
     public static function index() {
         $db = Flight::db();
+        $WelcomeController = new WelcomeController();
         $stmt = $db->prepare("SELECT * FROM Produit");
         $stmt->execute();
         $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        Flight::render('liste.php', ['produits' => $produits]);
+        Flight::render('liste.php', ['navbar' => $WelcomeController->get_navbar(),'produits' => $produits]);
     }
 
     public static function createForm() {

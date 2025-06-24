@@ -11,22 +11,15 @@
 <body>
     <div class="app-container">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="logo">
-                <h1>CRM Analytics</h1>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="<?=$base_url?>/dashboard" class="active">Accueil</a>
-                <a href="<?=$base_url?>/clients" >Clients</a>
-                <a href="<?=$base_url?>/produits" >Produits</a>
-                <a href="<?=$base_url?>/commandes">Commandes</a>
-                <a href="<?=$base_url?>/stat">Statistique</a>
-                <a href="<?=$base_url?>/simulation">Simulation</a>
-                <a href="<?=$base_url?>/actioncommercial">Actions Commerciales</a>
-                <a href="<?=$base_url?>/requeteClient">Requete Client</a>
-                <a href="<?=$base_url?>/requeteClient/stats">Statistique de Services Client</a>
-            </nav>
-        </div>
+
+    <div class="sidebar">
+        <header>
+            <h2>CRM</h2>
+        </header>
+        <nav class="sidebar-nav">
+            <?= $navbar ?>
+        </nav>
+    </div>
 
         <!-- Main Content -->
         <div class="main-content">
@@ -41,7 +34,7 @@
 
             <!-- Date Filter -->
             <div class="date-filter-container">
-                <form method="get" action="<?php echo $base_url; ?>/requeteClient/stats" id="dateFilterForm">
+                <form method="get" action="<?php echo $base_url; ?>/requeteClient_stats" id="dateFilterForm">
                     <div class="date-filter-group">
                         <label for="date_debut"><i class="far fa-calendar"></i> De :</label>
                         <input type="date" id="date_debut" name="date_debut" class="date-filter-input" 

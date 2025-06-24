@@ -75,8 +75,9 @@ class RequetClientControler {
     
     // Récupération des états pour le filtre
     $etats = $db->query("SELECT * FROM Etat_requete ORDER BY id_etat")->fetchAll(PDO::FETCH_ASSOC);
-    
+    $WelcomeController = new WelcomeController();
     return Flight::render("requeteClients", [
+        'navbar' => $WelcomeController->get_navbar(),
         "requeteClient" => $stmt->fetchAll(PDO::FETCH_ASSOC),
         "etats" => $etats,
         "filters" => $_GET // Pour pré-remplir les champs du formulaire
@@ -200,8 +201,10 @@ public static function getRequeteDetails($id_requete) {
 
         // 7. Liste des catégories de tickets
         $categories = $db->query("SELECT * FROM CategorieTicket")->fetchAll(PDO::FETCH_ASSOC);
+        $WelcomeController = new WelcomeController();
 
         return Flight::render("requete_details", [
+            'navbar' => $WelcomeController->get_navbar(),
             'requete' => $requete,
             'agentsAssignes' => $agentsAssignes,
             'affectationActive' => $affectationActive,

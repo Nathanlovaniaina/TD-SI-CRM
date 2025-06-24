@@ -15,14 +15,7 @@
 <div class="container">
     <div class="sidebar">
         <nav class="sidebar-nav">
-            <a href="<?= $base_url ?>/dashboard">Accueil</a>
-            <a href="<?= $base_url ?>/clients">Clients</a>
-            <a href="<?= $base_url ?>/produits">Produits</a>
-            <a href="<?= $base_url ?>/commandes">Commandes</a>
-            <a href="<?= $base_url ?>/stat">Statistique</a>
-            <a href="<?= $base_url ?>/simulation">Simulation</a>
-            <a href="<?= $base_url ?>/actioncommercial">Actions Commerciales</a>
-            <a href="<?= $base_url ?>/requeteClient" class="active">Requêtes Clients</a>
+            <?= $navbar ?>
         </nav>
     </div>
 
@@ -181,35 +174,7 @@
             </table>
         </div>
 
-        <div class="section">
-            <h2>Conversation</h2>
-            <div class="chat-container">
-                <?php if (empty($messagesChat)): ?>
-                    <p>Aucun message dans cette conversation</p>
-                <?php else: ?>
-                    <?php foreach ($messagesChat as $message): ?>
-                    <div class="message">
-                        <div class="message-header">
-                            <strong>
-                                <?= htmlspecialchars($message['expediteur_nom']) ?> 
-                                <?= htmlspecialchars($message['expediteur_prenom']) ?>
-                            </strong>
-                            <small><?= date('d/m/Y H:i', strtotime($message['date_envoi'])) ?></small>
-                        </div>
-                        <p><?= nl2br(htmlspecialchars($message['contenu'])) ?></p>
-                    </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-            
-            <form id="messageForm" method="POST" action="<?= $base_url ?>/requeteClient/envoyer-message" style="margin-top: 1rem;">
-                <input type="hidden" name="id_requete" value="<?= $requete['id_requete'] ?>">
-                <div class="form-group">
-                    <textarea name="message" rows="3" style="width: 100%;" placeholder="Écrivez votre message..." required></textarea>
-                </div>
-                <button type="submit" class="btn-primary">Envoyer</button>
-            </form>
-        </div>
+        
 
         <div class="section">
             <h2>Évaluations</h2>

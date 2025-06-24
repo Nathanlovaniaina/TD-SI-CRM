@@ -362,3 +362,9 @@ INSERT INTO RequeteClient (id_client, Sujet, Description, Date_creation, Fichier
 
 -- Requête 6 (ouverte - urgence)
 (7, 'Urgent! Commande bloquée', 'Ma commande #48750 est bloquée à l\'étape de paiement depuis 1h.', '2023-10-18 08:05:37', 'capture_ecran_paiement.png', 1);
+
+ALTER TABLE Client
+ADD COLUMN mot_de_passe VARCHAR(20);
+
+ALTER TABLE Employe
+ADD COLUMN mot_de_passe VARCHAR(20);

@@ -13,13 +13,13 @@ class ActionCommercialeController {
 
     public function actionsCommerciales() {
         $db = Flight::db();
-
+        $WelcomeController = new WelcomeController();
         try {
             $stmt = $db->prepare("SELECT * FROM ActionCommerciale");
             $stmt->execute();
             $actions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            Flight::render('actions_commerciales_view.php', ['actions' => $actions]);
+            Flight::render('actions_commerciales_view.php', ['actions' => $actions, 'navbar' => $WelcomeController->get_navbar()]);
 
         } catch (PDOException $e) {
             error_log('Erreur actionsCommerciales : ' . $e->getMessage());

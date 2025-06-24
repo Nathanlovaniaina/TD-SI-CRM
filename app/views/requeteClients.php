@@ -13,16 +13,9 @@
 </header>
 
 <div class="sidebar">
-    <nav class="sidebar-nav">
-        <a href="<?= $base_url ?>/dashboard">Accueil</a>
-        <a href="<?= $base_url ?>/clients">Clients</a>
-        <a href="<?= $base_url ?>/produits">Produits</a>
-        <a href="<?= $base_url ?>/commandes">Commandes</a>
-        <a href="<?= $base_url ?>/stat">Statistique</a>
-        <a href="<?= $base_url ?>/simulation">Simulation</a>
-        <a href="<?= $base_url ?>/actioncommercial">Actions Commerciales</a>
-        <a href="<?= $base_url ?>/requeteClient" class="active">Requêtes Clients</a>
-    </nav>
+        <nav class="sidebar-nav">
+            <?= $navbar ?>
+        </nav>
 </div>
 
 <div class="main-content">

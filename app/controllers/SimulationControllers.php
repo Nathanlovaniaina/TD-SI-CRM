@@ -199,7 +199,9 @@ class SimulationControllers {
 
     public function get_view(){
         $ActionDAO = new ActionDAO();
+        $WelcomeController = new WelcomeController();
         return Flight::render("simulation",[
+            'navbar' => $WelcomeController->get_navbar(),
             "actions"=> $ActionDAO->getAll()
         ]);
     }
@@ -236,12 +238,14 @@ class SimulationControllers {
     public function get_view_post(){
         $ActionDAO = new ActionDAO();
         $Post = Flight::request()->data;
+        $WelcomeController = new WelcomeController();
         $action = $ActionDAO->getById($Post['idAction']);
         if($Post['tierType']=="Valider"){
             $this->verfication_Budget($action['Cout'],$this->calculerNombreMoisEntreDates($Post['date_debut'],$Post['date_fin']));
         }
 
         return Flight::render("simulation",[
+            'navbar' => $WelcomeController->get_navbar(),
             "actions"=> $ActionDAO->getAll(),
             "stat" => $this->simulationAction($Post['idAction'],$Post['date_debut'],$Post['date_fin'],$action),
             "action"=> $ActionDAO->getById($Post['idAction']),

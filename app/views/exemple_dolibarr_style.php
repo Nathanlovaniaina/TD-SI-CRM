@@ -158,12 +158,7 @@
 
     <div class="sidebar">
         <nav class="sidebar-nav">
-            <a href="#" class="active">🏠 Accueil</a>
-            <a href="/clients">👥 Clients</a>
-            <a href="/commandes">📋 Commandes</a>            
-            <a href="#">📦 Produits</a>
-            <a href="#">🧾 Factures</a>
-            <a href="#">👤 Utilisateurs</a>
+            <?= $navbar ?>
         </nav>
     </div>
 
