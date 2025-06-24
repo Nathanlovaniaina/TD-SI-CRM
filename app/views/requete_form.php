@@ -1,3 +1,7 @@
+<?php 
+    $base_url = Flight::get('flight.base_url'); 
+    $userRole = $_SESSION["role"] ?? 'client';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -158,16 +162,7 @@
 
     <div class="sidebar">
         <nav class="sidebar-nav">
-            <a href="dashboard">Accueil</a>
-            <a href="clients">Clients</a>
-            <a href="produits">Produits</a>
-            <a href="commandes">Commandes</a>
-            <a href="stat">Statistique</a>
-            <a href="simulation">Simulation</a>
-            <a href="actioncommercial">Actions Commerciales</a>
-            <a href="requeteClient">Requete Client</a>
-            <a href="formulaireRequete" class="active">Formulaire Requête</a>
-            <a href="/requeteClient/stats">Statistique de Services Client</a>
+            <?= $navbar ?>
         </nav>
     </div>
 

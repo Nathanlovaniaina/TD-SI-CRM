@@ -9,10 +9,14 @@ class FormulaireRequetControler {
 
     public function afficherFormulaire() {
         $db = Flight::db();
+        $WelcomeController = new WelcomeController();
         $clients = $db->query("SELECT ClientID, Nom FROM Client")->fetchAll(PDO::FETCH_ASSOC);
         $requete = null;
         $allRequetes = $db->query("SELECT * FROM RequeteClient")->fetchAll(PDO::FETCH_ASSOC);
-        Flight::render('requete_form.php', compact('clients', 'requete', 'allRequetes'));
+        $navbar = $WelcomeController->get_navbar();
+        Flight::render('requete_form.php', 
+            compact('clients', 'requete', 'allRequetes', 'navbar')
+        );
     }
 
     public function insererRequete() {
