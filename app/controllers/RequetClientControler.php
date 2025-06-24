@@ -31,58 +31,80 @@ class RequetClientControler {
 	}
 
     public static function getAllRequeteClients() {
-    $db = Flight::db();
-    
-    // Construction de la requête SQL avec filtres
-    $sql = "SELECT rc.*, 
-                   c.Nom AS client_nom, 
-                   c.Prenom AS client_prenom,
-                   er.libelle AS etat_libelle
-            FROM RequeteClient rc
-            JOIN Client c ON rc.id_client = c.ClientID
-            JOIN Etat_requete er ON rc.id_etat = er.id_etat
-            WHERE 1=1"; // Toujours vrai pour faciliter l'ajout de conditions
-    
-    $params = [];
-    
-    // Filtre par état
-    if (!empty($_GET['filter_etat'])) {
-        $sql .= " AND rc.id_etat = :etat";
-        $params[':etat'] = $_GET['filter_etat'];
+        $db = Flight::db(); 
+        
+        // Récupération du rôle de l'utilisateur connecté (à adapter selon votre système d'authentification)
+        $role = $_SESSION['user_role'] ?? 'agent'; // Exemple basique
+        $userId = $_SESSION['user_id'] ?? null; // ID de l'utilisateur connecté
+        $userId = "4";
+        // Construction de la requête SQL avec filtres
+        $sql = "SELECT rc.*, 
+                       c.Nom AS client_nom, 
+                       c.Prenom AS client_prenom,
+                       er.libelle AS etat_libelle
+                FROM RequeteClient rc
+                JOIN Client c ON rc.id_client = c.ClientID
+                JOIN Etat_requete er ON rc.id_etat = er.id_etat
+                WHERE 1=1"; // Toujours vrai pour faciliter l'ajout de conditions
+
+        $params = [];
+        
+        // Si l'utilisateur est un agent, on filtre pour ne voir que ses requêtes affectées
+        if ($role === 'agent' && $userId) {
+            $sql .= " AND EXISTS (
+                        SELECT 1 FROM AffectationTicket at
+                        JOIN Agent a ON at.id_agent = a.id_agent
+                        WHERE at.id_requete = rc.id_requete
+                        AND a.id_employe = :user_id
+                    )";
+            $params[':user_id'] = $userId;
+        }
+
+        // Si l'utilisateur est un client, on filtre pour ne voir que ses propres requêtes
+        if ($role === 'client' && $userId) {
+            $sql .= " AND rc.id_client = :user_id";
+            $params[':user_id'] = $userId;
+        }
+
+        // Filtre par état
+        if (!empty($_GET['filter_etat'])) {
+            $sql .= " AND rc.id_etat = :etat";
+            $params[':etat'] = $_GET['filter_etat'];
+        }
+
+        // Filtre par client (recherche par nom) - seulement pour les admins/agents
+        if (!empty($_GET['filter_client']) && $role !== 'client') {
+            $sql .= " AND (c.Nom LIKE :client OR c.Prenom LIKE :client)";
+            $params[':client'] = '%' . $_GET['filter_client'] . '%';
+        }
+
+        // Filtre par date exacte
+        if (!empty($_GET['filter_date'])) {
+            $sql .= " AND DATE(rc.Date_creation) = :date";
+            $params[':date'] = $_GET['filter_date'];
+        }
+
+        // Tri et fin de requête
+        $sql .= " ORDER BY rc.Date_creation DESC";
+
+        // Préparation et exécution
+        $stmt = $db->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->execute();
+
+        // Récupération des états pour le filtre
+        $etats = $db->query("SELECT * FROM Etat_requete ORDER BY id_etat")->fetchAll(PDO::FETCH_ASSOC);
+        $WelcomeController = new WelcomeController();
+
+        return Flight::render("requeteClients", [
+            'navbar' => $WelcomeController->get_navbar(),
+            "requeteClient" => $stmt->fetchAll(PDO::FETCH_ASSOC),
+            "etats" => $etats,
+            "filters" => $_GET // Pour pré-remplir les champs du formulaire
+        ]);
     }
-    
-    // Filtre par client (recherche par nom)
-    if (!empty($_GET['filter_client'])) {
-        $sql .= " AND (c.Nom LIKE :client OR c.Prenom LIKE :client)";
-        $params[':client'] = '%' . $_GET['filter_client'] . '%';
-    }
-    
-    // Filtre par date exacte
-    if (!empty($_GET['filter_date'])) {
-        $sql .= " AND DATE(rc.Date_creation) = :date";
-        $params[':date'] = $_GET['filter_date'];
-    }
-    
-    // Tri et fin de requête
-    $sql .= " ORDER BY rc.Date_creation DESC";
-    
-    // Préparation et exécution
-    $stmt = $db->prepare($sql);
-    foreach ($params as $key => $value) {
-        $stmt->bindValue($key, $value);
-    }
-    $stmt->execute();
-    
-    // Récupération des états pour le filtre
-    $etats = $db->query("SELECT * FROM Etat_requete ORDER BY id_etat")->fetchAll(PDO::FETCH_ASSOC);
-    $WelcomeController = new WelcomeController();
-    return Flight::render("requeteClients", [
-        'navbar' => $WelcomeController->get_navbar(),
-        "requeteClient" => $stmt->fetchAll(PDO::FETCH_ASSOC),
-        "etats" => $etats,
-        "filters" => $_GET // Pour pré-remplir les champs du formulaire
-    ]);
-}
 
 public static function getRequeteDetails($id_requete) {
     $db = Flight::db();
