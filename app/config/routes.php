@@ -54,10 +54,10 @@ $router->post('/login',function(){
 		Flight::redirect('/');
 		return;
 	}elseif ($WelcomeController->loginAgent($identifiant, $mdp)==true) {
-		Flight::redirect('/requeteClient_stats');
+		Flight::redirect('/requeteClient');
 		return;
 	}else{
-		Flight::redirect('/requeteClient_stats');
+		Flight::redirect('/requeteClient');
 	}
 });
 
