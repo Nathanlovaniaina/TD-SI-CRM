@@ -431,7 +431,7 @@ public static function cloturerRequete(int $id_requete, string $statut = 'résol
         Flight::flash('error', $e->getMessage());
     }
 
-    Flight::redirect("/requeteClient/details/{$id_requete}");
+    Flight::redirect("/requeteClient");
 }
 
 public static function supprimerRequete(int $id_requete): void {

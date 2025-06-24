@@ -254,10 +254,11 @@ $base_url = Flight::get('flight.base_url');
                 <button onclick="envoyerMessage(<?= $id_ticket ?>, <?= $id_affectation ?>)">Envoyer</button>
             </div>
             
-            <div class="action-buttons">
-                <button class="btn-success">Clôturer le ticket</button>
-                <button class="btn-info">Transférer</button>
-            </div>
+            <!-- <div class="action-buttons">
+                <a href="/requete/cloturer/<?= $id_requete ?>" class="btn-success-link">
+                    <button class="btn-success">Clôturer le ticket</button>
+                </a>
+            </div> -->
         </div>
     </div>
 

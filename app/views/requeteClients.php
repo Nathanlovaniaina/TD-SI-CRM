@@ -23,7 +23,9 @@ $userRole = $_SESSION["role"] ?? 'client';
 
 <div class="main-content">
     <h1>Gestion des Requêtes Clients</h1>
-    <a href="formulaireRequete" class="add-btn">➕ Ajouter une action</a>
+    <?php if ($userRole !== 'agent'): ?>
+        <a href="formulaireRequete" class="add-btn">➕ Ajouter une action</a>
+    <?php endif?>
     <!-- Formulaire de filtre -->
     <div class="filter-container">
         <form method="get" action="<?= $base_url ?>/requeteClient" class="filter-form">

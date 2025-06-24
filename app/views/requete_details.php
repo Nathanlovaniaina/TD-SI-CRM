@@ -1,4 +1,10 @@
-<?php $base_url = Flight::get('flight.base_url'); ?>
+<?php 
+$base_url = Flight::get('flight.base_url'); 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$userRole = $_SESSION["role"] ?? 'client';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -69,86 +75,87 @@
         </div>
 
         <div class="section">
-            <h2>Gestion de l'affectation</h2>
-            
-            <form id="assignForm" method="POST" action="<?= $base_url ?>/requeteClient/affecter" class="assign-form">
-                <input type="hidden" name="id_requete" value="<?= $requete['id_requete'] ?>">
-                <?php if (isset($affectationActive['id_ticket'])): ?>
-                <input type="hidden" name="id_ticket" value="<?= $affectationActive['id_ticket'] ?>">
-                <?php endif; ?>
+            <?php if ($userRole === 'admin'): ?>
+                <h2>Gestion de l'affectation</h2>
                 
-                <div class="form-row">
+                <form id="assignForm" method="POST" action="<?= $base_url ?>/requeteClient/affecter" class="assign-form">
+                    <input type="hidden" name="id_requete" value="<?= $requete['id_requete'] ?>">
+                    <?php if (isset($affectationActive['id_ticket'])): ?>
+                    <input type="hidden" name="id_ticket" value="<?= $affectationActive['id_ticket'] ?>">
+                    <?php endif; ?>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ticketCategory">Catégorie :</label>
+                            <select id="ticketCategory" name="id_categorie" required>
+                                <option value="">Sélectionnez une catégorie</option>
+                                <?php foreach ($categories as $categorie): ?>
+                                <option value="<?= $categorie['id_categorie'] ?>" >
+                                    <?= htmlspecialchars($categorie['Nom']) ?>
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                                
+                        <div class="form-group">
+                            <label for="ticketPriority">Priorité :</label>
+                            <select id="ticketPriority" name="priorite" required>
+                                <option value="faible" <?= isset($affectationActive) && $affectationActive['priorite'] == 'faible' ? 'selected' : '' ?>>Faible</option>
+                                <option value="moyenne" <?= isset($affectationActive) && $affectationActive['priorite'] == 'moyenne' ? 'selected' : '' ?>>Moyenne</option>
+                                <option value="haute" <?= isset($affectationActive) && $affectationActive['priorite'] == 'haute' ? 'selected' : '' ?>>Haute</option>
+                                <option value="urgence" <?= isset($affectationActive) && $affectationActive['priorite'] == 'urgence' ? 'selected' : '' ?>>Urgence</option>
+                            </select>
+                        </div>
+                    </div>
+                                
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ticketPrice">Prix prestation :</label>
+                            <input type="number" id="ticketPrice" name="prixPrestation" step="0.01" min="0" 
+                                value="<?= isset($affectationActive) ? htmlspecialchars($affectationActive['prixPrestation']) : '' ?>" required>
+                        </div>
+                                
+                        <div class="form-group">
+                            <label for="ticketDuration">Durée (minutes) :</label>
+                            <input type="number" id="ticketDuration" name="duree" min="1" 
+                                value="<?= isset($affectationActive) ? htmlspecialchars($affectationActive['duree']) : '30' ?>" required>
+                        </div>
+                    </div>
+                                
                     <div class="form-group">
-                        <label for="ticketCategory">Catégorie :</label>
-                        <select id="ticketCategory" name="id_categorie" required>
-                            <option value="">Sélectionnez une catégorie</option>
-                            <?php foreach ($categories as $categorie): ?>
-                            <option value="<?= $categorie['id_categorie'] ?>" >
-                                <?= htmlspecialchars($categorie['Nom']) ?>
+                        <label for="agentSelect">Agent :</label>
+                        <select id="agentSelect" name="id_agent" required>
+                            <option value="">Sélectionnez un agent</option>
+                            <?php foreach ($agentsDisponibles as $agent): ?>
+                            <option value="<?= $agent['id_agent'] ?>"
+                                <?= isset($affectationActive) && $affectationActive['id_agent'] == $agent['id_agent'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($agent['Nom']) ?> 
+                                (<?= $agent['nb_requetes_actives'] ?> requêtes)
                             </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="ticketPriority">Priorité :</label>
-                        <select id="ticketPriority" name="priorite" required>
-                            <option value="faible" <?= isset($affectationActive) && $affectationActive['priorite'] == 'faible' ? 'selected' : '' ?>>Faible</option>
-                            <option value="moyenne" <?= isset($affectationActive) && $affectationActive['priorite'] == 'moyenne' ? 'selected' : '' ?>>Moyenne</option>
-                            <option value="haute" <?= isset($affectationActive) && $affectationActive['priorite'] == 'haute' ? 'selected' : '' ?>>Haute</option>
-                            <option value="urgence" <?= isset($affectationActive) && $affectationActive['priorite'] == 'urgence' ? 'selected' : '' ?>>Urgence</option>
-                        </select>
+                            
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <?= isset($affectationActive) ? 'Mettre à jour l\'affectation' : 'Créer l\'affectation' ?>
+                        </button>
+                            
+                        <?php if (isset($affectationActive)): ?>
+                        <a href="<?= $base_url ?>/requete/cloturer/<?= $requete['id_requete'] ?>" 
+                           class="btn-secondary" 
+                           onclick="return confirm('Voulez-vous vraiment clôturer ce ticket ?')">
+                            Clôturer le ticket
+                        </a>
+                        <a href="<?= $base_url ?>/requete/resolue/<?= $requete['id_requete'] ?>" 
+                           class="btn-secondary" 
+                           onclick="return confirm('Voulez-vous vraiment resoudre ce ticket ?')">
+                            Resoudre le ticket
+                        </a>
+                        <?php endif; ?>
                     </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="ticketPrice">Prix prestation :</label>
-                        <input type="number" id="ticketPrice" name="prixPrestation" step="0.01" min="0" 
-                            value="<?= isset($affectationActive) ? htmlspecialchars($affectationActive['prixPrestation']) : '' ?>" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="ticketDuration">Durée (minutes) :</label>
-                        <input type="number" id="ticketDuration" name="duree" min="1" 
-                            value="<?= isset($affectationActive) ? htmlspecialchars($affectationActive['duree']) : '30' ?>" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="agentSelect">Agent :</label>
-                    <select id="agentSelect" name="id_agent" required>
-                        <option value="">Sélectionnez un agent</option>
-                        <?php foreach ($agentsDisponibles as $agent): ?>
-                        <option value="<?= $agent['id_agent'] ?>"
-                            <?= isset($affectationActive) && $affectationActive['id_agent'] == $agent['id_agent'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($agent['Nom']) ?> 
-                            (<?= $agent['nb_requetes_actives'] ?> requêtes)
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">
-                        <?= isset($affectationActive) ? 'Mettre à jour l\'affectation' : 'Créer l\'affectation' ?>
-                    </button>
-                    
-                    <?php if (isset($affectationActive)): ?>
-                    <a href="<?= $base_url ?>/requete/cloturer/<?= $requete['id_requete'] ?>" 
-                       class="btn-secondary" 
-                       onclick="return confirm('Voulez-vous vraiment clôturer ce ticket ?')">
-                        Clôturer le ticket
-                    </a>
-                    <a href="<?= $base_url ?>/requete/resolue/<?= $requete['id_requete'] ?>" 
-                       class="btn-secondary" 
-                       onclick="return confirm('Voulez-vous vraiment resoudre ce ticket ?')">
-                        Resoudre le ticket
-                    </a>
-                    <?php endif; ?>
-                </div>
-            </form>
-            
+                </form>
+            <?php endif?>
             <h3 style="margin-top: 30px;">Historique des assignations</h3>
             <table>
                 <thead>

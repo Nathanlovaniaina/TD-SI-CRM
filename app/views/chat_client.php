@@ -256,7 +256,9 @@ $base_url = Flight::get('flight.base_url');
             </div>
             
             <div class="action-buttons">
-                <button class="btn-success">Problème résolu</button>
+                <a href="/requete/resolue/<?= $id_requete ?>" class="btn-success-link">
+                    <button class="btn-success">Problème résolu</button>
+                </a>
                 <a href="/evaluation_form/<?= $id_ticket ?>/<?= $id_affectation ?>" class="btn-info">Évaluer le support</a>
             </div>
         </div>
