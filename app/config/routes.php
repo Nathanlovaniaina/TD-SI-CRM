@@ -17,6 +17,7 @@ use app\controllers\ActionCommercialeController;
 use app\controllers\RequetClientControler;
 use app\controllers\StatistiqueTicketController;
 use app\controllers\AuthController;
+use app\controllers\FormulaireRequetControler;
 // use Flight;
 
 /** 
@@ -198,4 +199,29 @@ Flight::route('GET /requeteClient/supprimer/@id', function($id) {
 Flight::route('GET /requeteClient_stats', function() {
 	$controller = new StatistiqueTicketController();
 	$controller->showStatsDashboard();
+});
+
+$router->get('/requete-client', function () {
+    $controller = new FormulaireRequetControler();
+    $controller->afficherFormulaire();
+});
+
+$router->post('/requete-client', function () {
+    $controller = new FormulaireRequetControler();
+    $controller->insererRequete();
+});
+
+$router->get('/requete-client/edit/@id', function ($id) {
+    $controller = new FormulaireRequetControler();
+    $controller->modifierFormulaire($id);
+});
+
+$router->post('/requete-client/update/@id', function ($id) {
+    $controller = new FormulaireRequetControler();
+    $controller->mettreAJour($id);
+});
+
+$router->get('/formulaireRequete', function () {
+    $controller = new FormulaireRequetControler();
+    $controller->afficherFormulaire();
 });

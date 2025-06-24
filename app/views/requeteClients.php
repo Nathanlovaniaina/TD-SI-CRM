@@ -1,4 +1,7 @@
-<?php $base_url = Flight::get('flight.base_url'); ?>
+<?php 
+$base_url = Flight::get('flight.base_url'); 
+$userRole = $_SESSION["role"] ?? 'client';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -94,9 +97,16 @@
                     </td>
                     <td>
                         <div class="action-buttons">
-                            <a href="<?= $base_url ?>/requeteClient/details/<?= $requete['id_requete'] ?>" class="action-btn view-btn">Voir</a>
-                            <!-- <a href="<?= $base_url ?>/requeteClient/modifier/<?= $requete['id_requete'] ?>" class="action-btn edit-btn">✏️ Modifier</a> -->
-                            <a href="<?= $base_url ?>/requeteClient/supprimer/<?= $requete['id_requete'] ?>" class="action-btn delete-btn" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
+                            <?php if ($userRole === 'admin'): ?>
+                                <a href="<?= $base_url ?>/requeteClient/modifier/<?= $requete['id_requete'] ?>" class="action-btn edit-btn">✏️ Modifier</a>
+                                <a href="<?= $base_url ?>/requeteClient/supprimer/<?= $requete['id_requete'] ?>" class="action-btn delete-btn" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
+                                <a href="<?= $base_url ?>/requeteClient/details/<?= $requete['id_requete'] ?>" class="action-btn view-btn">Convresation</a>
+                            <?php elseif ($userRole === 'agent'): ?>     
+                                <a href="<?= $base_url ?>/requeteClient/details/<?= $requete['id_requete'] ?>" class="action-btn view-btn">Voir</a>   
+                                <a href="<?= $base_url ?>/requeteClient/details/<?= $requete['id_requete'] ?>" class="action-btn view-btn">Convresation</a>
+                            <?php elseif ($userRole === 'client'): ?>       
+                                <a href="<?= $base_url ?>/requeteClient/details/<?= $requete['id_requete'] ?>" class="action-btn view-btn">Convresation</a>
+                            <?php endif; ?>
                         </div>
                     </td>
                 </tr>
