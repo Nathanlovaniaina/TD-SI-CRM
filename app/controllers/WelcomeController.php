@@ -30,6 +30,62 @@ class WelcomeController {
 		return false;
 	}
 
+     public function loginView() {
+        Flight::render('login');
+    }
+
+    public function loginClient($username, $password) {
+         if (session_status() === PHP_SESSION_NONE){
+            session_start();
+        }
+        $pdo = Flight::db();
+        // Vérifie dans Client
+        $stmt = $pdo->prepare("SELECT * FROM Client WHERE Email = :Email AND mot_de_passe =:mot_de_passe");
+        $stmt->execute([':Email' => $username, ':mot_de_passe' => $password]);
+        $client = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($client) {
+            $_SESSION['role'] = 'client';
+            $_SESSION['client_id'] = $client['ClientID'];
+            print("tay");
+            //Flight::redirect('/chat/client');
+            return true;
+        }
+        return false;
+    }
+
+    public function loginAgent($username, $password) {
+         if (session_status() === PHP_SESSION_NONE){
+            session_start();
+        }
+        $pdo = Flight::db();
+        $stmt = $pdo->prepare("SELECT * FROM Employe WHERE Email = :Email AND mot_de_passe =:mot_de_passe");
+        $stmt->execute([':Email' => $username, ':mot_de_passe' => $password]);
+        $employe = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($employe) {
+            $stmt2 = $pdo->prepare("SELECT * FROM Agent WHERE id_employe = ?");
+            $stmt2->execute([$employe['EmployeID']]);
+            $agent = $stmt2->fetch();
+
+            if ($agent) {
+                $_SESSION['role'] = 'agent';
+                $_SESSION['agent_id'] = $agent['id_agent'];
+                //Flight::redirect('/chat/agent');
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function logout() {
+         if (session_status() === PHP_SESSION_NONE){
+            session_start();
+        }
+        session_destroy();
+        Flight::redirect('/');
+    }
+
 	public function get_navbar() {
     if (session_status() === PHP_SESSION_NONE) {
         session_start();

@@ -16,6 +16,7 @@ use app\controllers\CommandeController;
 use app\controllers\ActionCommercialeController;
 use app\controllers\RequetClientControler;
 use app\controllers\StatistiqueTicketController;
+use app\controllers\AuthController;
 // use Flight;
 
 /** 
@@ -37,6 +38,8 @@ $router->get('/',function(){
 	Flight::render('login');
 });
 
+//Flight::route('POST /login', function(){}[new AuthController(), 'loginSubmit']);
+Flight::route('/logout', [new WelcomeController(), 'logout']);
 
 $router->post('/login',function(){
 	$WelcomeController = new WelcomeController();
@@ -44,6 +47,13 @@ $router->post('/login',function(){
 	$identifiant = $Post['username'];
 	$mdp = $Post['password'];
 	if($WelcomeController->verifieLogin($identifiant, $mdp)){
+		Flight::redirect('/dashboard');
+		return;
+	}
+	if($WelcomeController->loginClient($identifiant, $mdp)==true){
+		Flight::redirect('/dashboard');
+		return;
+	}elseif ($WelcomeController->loginAgent($identifiant, $mdp)==true) {
 		Flight::redirect('/dashboard');
 		return;
 	}else{

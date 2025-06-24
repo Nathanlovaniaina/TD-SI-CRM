@@ -82,13 +82,13 @@
         <h2>Connexion</h2>
         <form method="post" action="login">
             <div class="form-group">
-                <label for="username">Identifiant</label>
-                <input type="text" id="username" name="username" value="admin_finance" required>
+                <label for="username">Identifiant ou email</label>
+                <input type="text" id="username" name="username" required>
             </div>
 
             <div class="form-group">
                 <label for="password">Mot de passe</label>
-                <input type="password" id="password" name="password" value="hashedpassword1" required>
+                <input type="password" id="password" name="password" required>
             </div>
 
             <button type="submit" class="login-btn">Se connecter</button>
