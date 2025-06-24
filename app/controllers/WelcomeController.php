@@ -59,8 +59,6 @@ class WelcomeController {
     } elseif ($role === 'client') {
         $navItems = [
             ["href" => $base_url."requeteClient", "label" => "Mes requetes"],
-            ["href" => $base_url."commandes", "label" => "Commandes"],
-            ["href" => $base_url."stat", "label" => "Statistique"],
         ];
     }
 

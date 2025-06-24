@@ -55,7 +55,7 @@ class RequetClientControler {
                         SELECT 1 FROM AffectationTicket at
                         JOIN Agent a ON at.id_agent = a.id_agent
                         WHERE at.id_requete = rc.id_requete
-                        AND a.id_employe = :user_id AND is_valide = TRUE
+                        AND a.id_employe = :user_id
                     )";
             $params[':user_id'] = $userId;
         }
