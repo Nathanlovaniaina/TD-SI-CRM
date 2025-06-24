@@ -51,13 +51,13 @@ $router->post('/login',function(){
 		return;
 	}
 	if($WelcomeController->loginClient($identifiant, $mdp)==true){
-		Flight::redirect('/');
+		Flight::redirect('/requeteClient');
 		return;
 	}elseif ($WelcomeController->loginAgent($identifiant, $mdp)==true) {
 		Flight::redirect('/requeteClient');
 		return;
 	}else{
-		Flight::redirect('/requeteClient');
+		Flight::redirect('/');
 	}
 });
 
