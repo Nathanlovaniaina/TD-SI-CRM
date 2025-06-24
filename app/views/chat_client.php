@@ -87,5 +87,6 @@ function envoyerMessage(id_ticket, id_affectation) {
         setInterval(() => chargerMessages(id_affectation), 3000);
     </script>
     <button>Probleme resolu</button>
+    <a href="/evaluation/form">Evaluer</a>
 </body>
 </html>

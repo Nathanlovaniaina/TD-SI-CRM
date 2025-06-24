@@ -241,3 +241,9 @@ $router->get('/formulaireRequete', function () {
     $controller = new FormulaireRequetControler();
     $controller->afficherFormulaire();
 });
+
+use app\controllers\EvaluationController;
+
+Flight::route('GET /evaluation/form', [new EvaluationController(), 'showForm']);
+Flight::route('POST /evaluation/submit', [new EvaluationController(), 'submit']);
+Flight::route('GET /agent/@id/moyenne', [new EvaluationController(), 'moyenneParAgent']);

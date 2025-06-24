@@ -246,7 +246,7 @@ CREATE TABLE `chatticket` (
   `id_message` int(11) NOT NULL,
   `id_ticket` int(11) NOT NULL,
   `id_agent` int(11) DEFAULT NULL,
-  `id_client` int(11) NOT NULL,
+  `id_client` int(11) ,
   `contenu` text NOT NULL,
   `date_envoi` datetime DEFAULT current_timestamp(),
   `id_affectation` int(11) NOT NULL
