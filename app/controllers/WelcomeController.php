@@ -19,7 +19,11 @@ class WelcomeController {
 		print_r($user);
 	
 		if ($user) {
-			// Connexion réussie, tu peux stocker l'utilisateur en session
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+
+            $_SESSION['role'] = 'admin';
 			$_SESSION['user_id'] = $user['id_user'];
 			$_SESSION['identifiant'] = $user['identifiant'];
 			$_SESSION['id_departement'] = $user['id_departement'];
@@ -55,7 +59,7 @@ class WelcomeController {
     }
 
     public function loginAgent($username, $password) {
-         if (session_status() === PHP_SESSION_NONE){
+        if (session_status() === PHP_SESSION_NONE){
             session_start();
         }
         $pdo = Flight::db();

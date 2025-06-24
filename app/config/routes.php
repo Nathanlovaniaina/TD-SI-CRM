@@ -18,6 +18,7 @@ use app\controllers\RequetClientControler;
 use app\controllers\StatistiqueTicketController;
 use app\controllers\ChatController;
 use app\controllers\AuthController;
+use app\controllers\FormulaireRequetControler;
 // use Flight;
 
 /** 
@@ -216,3 +217,27 @@ Flight::route('GET /api/chat/@id_affectation', function($id_affectation){
 });
 
 Flight::route('POST /api/chat/send', [new ChatController(), 'sendMessage']);
+$router->get('/requete-client', function () {
+    $controller = new FormulaireRequetControler();
+    $controller->afficherFormulaire();
+});
+
+$router->post('/requete-client', function () {
+    $controller = new FormulaireRequetControler();
+    $controller->insererRequete();
+});
+
+$router->get('/requete-client/edit/@id', function ($id) {
+    $controller = new FormulaireRequetControler();
+    $controller->modifierFormulaire($id);
+});
+
+$router->post('/requete-client/update/@id', function ($id) {
+    $controller = new FormulaireRequetControler();
+    $controller->mettreAJour($id);
+});
+
+$router->get('/formulaireRequete', function () {
+    $controller = new FormulaireRequetControler();
+    $controller->afficherFormulaire();
+});

@@ -33,10 +33,19 @@ class RequetClientControler {
     public static function getAllRequeteClients() {
         $db = Flight::db(); 
         
-        // Récupération du rôle de l'utilisateur connecté (à adapter selon votre système d'authentification)
-        $role = $_SESSION['user_role'] ?? 'agent'; // Exemple basique
-        $userId = $_SESSION['user_id'] ?? null; // ID de l'utilisateur connecté
-        $userId = "3";
+        if (session_status() === PHP_SESSION_NONE){
+            session_start();
+        }
+
+        $role = $_SESSION['role'] ?? 'client'; // Exemple basique
+        if($role == "client"){
+            $userId = (string)$_SESSION['client_id'];
+        }
+        if($role == "agent"){
+            $userId =  (string)$_SESSION['agent_id'];
+        }
+
+        
         // Construction de la requête SQL avec filtres
         $sql = "SELECT rc.*, 
                        c.Nom AS client_nom, 
