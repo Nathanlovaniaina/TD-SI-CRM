@@ -61,7 +61,6 @@ $userRole = $_SESSION["role"] ?? 'client';
         <table class="products-table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Client</th>
                     <th>Sujet</th>
                     <th>Date</th>
@@ -77,7 +76,6 @@ $userRole = $_SESSION["role"] ?? 'client';
                 <?php else: ?>
                 <?php foreach ($requeteClient as $requete): ?>
                 <tr>
-                    <td><?= htmlspecialchars($requete['id_requete']) ?></td>
                     <td>
                         <?= htmlspecialchars($requete['client_nom'] ?? 'Client #'.htmlspecialchars($requete['id_client'])) ?>
                         <?= isset($requete['client_prenom']) ? htmlspecialchars($requete['client_prenom']) : '' ?>
@@ -101,12 +99,12 @@ $userRole = $_SESSION["role"] ?? 'client';
                                 <a href="<?= $base_url ?>/requeteClient/details/<?= $requete['id_requete'] ?>" class="action-btn view-btn">Voir</a>
                                 <a href="<?= $base_url ?>/requeteClient/modifier/<?= $requete['id_requete'] ?>" class="action-btn edit-btn">✏️ Modifier</a>
                                 <a href="<?= $base_url ?>/requeteClient/supprimer/<?= $requete['id_requete'] ?>" class="action-btn delete-btn" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
-                                <a href="<?= $base_url ?>/requeteClient/chat/<?= $userRole ?>" class="action-btn delete-btn" >Voir message</a>
+                                <a href="<?= $base_url ?>/requeteClient_chat/<?= $requete['id_requete'] ?>" class="action-btn delete-btn" >Voir message</a>
                             <?php elseif ($userRole === 'agent'): ?>     
                                 <a href="<?= $base_url ?>/requeteClient/details/<?= $requete['id_requete'] ?>" class="action-btn view-btn">Voir</a>   
-                                <a href="<?= $base_url ?>/requeteClient/chat/<?= $userRole ?>" class="action-btn delete-btn" >Voir message</a>
+                                <a href="<?= $base_url ?>/requeteClient_chat/<?= $requete['id_requete'] ?>" class="action-btn delete-btn" >Voir message</a>
                             <?php elseif ($userRole === 'client'): ?>       
-                                <a href="<?= $base_url ?>/requeteClient/chat/<?= $userRole ?>" class="action-btn delete-btn" >Voir message</a>
+                                <a href="<?= $base_url ?>/requeteClient_chat/<?= $requete['id_requete'] ?>" class="action-btn delete-btn" >Voir message</a>
                             <?php endif; ?>
                         </div>
                     </td>

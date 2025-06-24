@@ -4,10 +4,12 @@ namespace app\controllers;
 use Flight;
 
 class EvaluationController {
-    public function showForm() {
+    public function showForm($id_ticket,$id_affectation) {
+        $WelcomeController = new WelcomeController();
         Flight::render('evaluation_form', [
-            'id_ticket' => $_GET['ticket'],
-            'id_affectation' => $_GET['affectation']
+            'navbar' => $WelcomeController->get_navbar(),
+            'id_ticket' => $id_ticket,
+            'id_affectation' => $id_affectation
         ]);
     }
 
@@ -24,7 +26,7 @@ class EvaluationController {
             $data['id_affectation']
         ]);
 
-        Flight::redirect('/merci-evaluation');
+        Flight::redirect('/requeteClient');
     }
 
     public function moyenneParAgent($id_agent) {

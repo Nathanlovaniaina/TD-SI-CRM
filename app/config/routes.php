@@ -19,6 +19,7 @@ use app\controllers\StatistiqueTicketController;
 use app\controllers\ChatController;
 use app\controllers\AuthController;
 use app\controllers\FormulaireRequetControler;
+use app\controllers\EvaluationController;
 // use Flight;
 
 /** 
@@ -202,6 +203,25 @@ Flight::route('GET /requeteClient_stats', function() {
 	$controller->showStatsDashboard();
 });
 
+$router->get('/requeteClient_chat/@id',function($id){
+	if (session_status() === PHP_SESSION_NONE){
+        session_start();
+    }
+	$role = $_SESSION['role'];
+	$chatcontroller =new ChatController();
+	if ($role === 'agent' || $role === 'admin'){
+		$chatcontroller->agentChat($id);
+		exit;
+	}
+	else if($role == 'client'){	
+		$chatcontroller->clientChat($id);
+		return;
+	}
+	else{
+		Flight::redirect('/');
+	}
+});
+
 $router->get('/requeteClient/chat/client',function(){
 	$chatcontroller =new ChatController();
 	$chatcontroller->clientChat();
@@ -242,8 +262,11 @@ $router->get('/formulaireRequete', function () {
     $controller->afficherFormulaire();
 });
 
-use app\controllers\EvaluationController;
+$router->get('/evaluation_form/@id_ticket/@id_affectation', function($id_ticket, $id_affectation) {
+    $controller = new EvaluationController();
+    $controller->showForm($id_ticket, $id_affectation);
+});
 
-Flight::route('GET /evaluation/form', [new EvaluationController(), 'showForm']);
+Flight::route('GET /evaluation_form', [new EvaluationController(), 'showForm']);
 Flight::route('POST /evaluation/submit', [new EvaluationController(), 'submit']);
 Flight::route('GET /agent/@id/moyenne', [new EvaluationController(), 'moyenneParAgent']);

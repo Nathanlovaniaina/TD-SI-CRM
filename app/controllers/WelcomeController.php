@@ -102,25 +102,25 @@ class WelcomeController {
 
     if ($role === 'admin') {
         $navItems = [
-            ["href" => $base_url."dashboard", "label" => "Accueil"],
-            ["href" => $base_url."clients", "label" => "Clients"],
-            ["href" => $base_url."produits", "label" => "Produits"],
-            ["href" => $base_url."commandes", "label" => "Commandes"],
-            ["href" => $base_url."stat", "label" => "Statistique"],
-            ["href" => $base_url."simulation", "label" => "Simulation"],
-            ["href" => $base_url."actioncommercial", "label" => "Actions Commerciales"],
-            ["href" => $base_url."requeteClient", "label" => "Requete Client"],
+            ["href" => $base_url."/dashboard", "label" => "Accueil"],
+            ["href" => $base_url."/clients", "label" => "Clients"],
+            ["href" => $base_url."/produits", "label" => "Produits"],
+            ["href" => $base_url."/commandes", "label" => "Commandes"],
+            ["href" => $base_url."/stat", "label" => "Statistique"],
+            ["href" => $base_url."/simulation", "label" => "Simulation"],
+            ["href" => $base_url."/actioncommercial", "label" => "Actions Commerciales"],
+            ["href" => $base_url."/requeteClient", "label" => "Requete Client"],
             ["href" => $base_url."/requeteClient_stats", "label" => "Statistique de Services Client"],
             ["href" => $base_url."/logout", "label" => "Deconnexion"],
         ];
     } elseif ($role === 'agent') {
         $navItems = [
-            ["href" => $base_url."requeteClient", "label" => "Requete Clients"],
+            ["href" => $base_url."/requeteClient", "label" => "Requete Clients"],
             ["href" => $base_url."/logout", "label" => "Deconnexion"],
         ];
     } elseif ($role === 'client') {
         $navItems = [
-            ["href" => $base_url."requeteClient", "label" => "Mes requetes"],
+            ["href" => $base_url."/requeteClient", "label" => "Mes requetes"],
             ["href" => $base_url."/logout", "label" => "Deconnexion"],
         ];
     }
