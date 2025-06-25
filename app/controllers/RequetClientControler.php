@@ -434,6 +434,13 @@ public static function cloturerRequete(int $id_requete, string $statut = 'résol
     Flight::redirect("/requeteClient");
 }
 
+public static function ajouterRequeteBudgetaire($valeur) {
+    $db = Flight::db(); // Connexion PDO
+
+    $stmt = $db->prepare("INSERT INTO RequeteBudgetaire (valeur) VALUES (:valeur)");
+    $stmt->execute([':valeur' => $valeur]);
+}
+
 public static function supprimerRequete(int $id_requete): void {
     $db = Flight::db();
 
